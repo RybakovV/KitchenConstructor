@@ -2,6 +2,7 @@ package com.ecru;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * Created by Vitaliy Ryvakov on 16.09.2016.
@@ -29,11 +30,18 @@ public class CharsetDemo {
         System.out.println(changeStringEncoding(strUKR, "cp1251"));
         System.out.println(changeStringEncoding(strUKR, "UTF-16"));
 
+        System.out.println(changeStringEncoding("Ж", "UTF-16"));
+        System.out.println(changeStringEncoding("у", "UTF-16"));
+        System.out.println(changeStringEncoding("Ж", "UTF-16"));
+        System.out.println(changeStringEncoding("а", "UTF-16"));
+
     }
 
     private static String changeStringEncoding(String str, String encodingTo) throws UnsupportedEncodingException {
         byte[] strBytes = str.getBytes(encodingTo);
-        return new String(strBytes, encodingTo);
+        String result = new String(strBytes, encodingTo);
+        System.out.println("Encoding = " + encodingTo + "; Length = " + strBytes.length + " : " + Arrays.toString(strBytes));
+        return result;
     }
 
     private static String getBinnaryReprisantation(String str, String encoding) throws UnsupportedEncodingException {
@@ -44,6 +52,7 @@ public class CharsetDemo {
 
         for (int i = 0; i < strBytes.length; i++) {
             result += strBytes[i] + "(" + Integer.toBinaryString(strBytes[i]) + ")";
+
 
         }
 
