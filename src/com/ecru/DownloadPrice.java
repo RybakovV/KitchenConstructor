@@ -1,5 +1,7 @@
 package com.ecru;
 
+import com.sun.org.apache.xerces.internal.impl.io.UTF8Reader;
+
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,8 +24,46 @@ public class DownloadPrice {
         readFileAndWriteToDB("Senso 4.txt");
         readFileAndWriteToDB("Senso 5.txt");
         readFileAndWriteToDB("Senso 6.txt");
-*/
         readFRNFROMFileAndWriteToDB("FRN.txt");
+*/
+        readColorsFROMFileAndWriteToDB("colors.txt", "colors");
+    }
+
+    private static void readColorsFROMFileAndWriteToDB(String fileName, String tableName) {
+        String line;
+        try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            while((line = br.readLine()) != null){
+/*
+                byte[] lineBytes = line.getBytes("UTF-8");
+                line = new String(lineBytes, "UTF-8");
+*/
+                writeLineToDB("colors", "frn_kod, color_kod, name", line);
+            }
+            br.close();
+            System.out.println("Read complet...");
+        } catch (FileNotFoundException e) {
+
+        } catch (IOException e) {
+
+        }
+
+    }
+
+    private static void writeLineToDB(String tableName, String columns, String line) {
+        String arrayLine[] =  line.split("\t");
+        Statement statement;
+        try {
+            statement = connection.createStatement();
+
+            String sql = "INSERT INTO " + tableName + " (" + columns + ") VALUES(" +
+                    "'" + arrayLine[0] + "', " +
+                    "'" + arrayLine[1] + "', " +
+                    "'" + arrayLine[2].replace("'","\\'")+"')";
+            statement.executeUpdate(sql);
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void readFRNFROMFileAndWriteToDB(String fileName) {
