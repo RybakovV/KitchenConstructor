@@ -448,13 +448,29 @@ public class IntegrationTest {
                 "KOR-GOO_60/50 1\n" +
                 "K04-KORPUS-BEJ-GOO_60/50-KOR+AKC02\tКорпус Беж Ясний GOO_60/50\t878.4400024414062\t1\t878.4400024414062\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_A2-AKC02 1\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_A2-AKC02 1\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_A2-AKC02\tПідйомний механізм AVENTOS_HF_A2\t2115.0\t1\t2115.0\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_C1-AKC02 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_C1-AKC02 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_C1-AKC02\tПідйомний механізм AVENTOS_HF_C1\t553.27001953125\t2\t1106.5400390625\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_D1-AKC01 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_D1-AKC01 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_D1-AKC01\tПідйомний механізм AVENTOS_HF_D1\t287.7200012207031\t2\t575.4400024414062\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_B1-AKC02 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_B1-AKC02 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_B1-AKC02\tПідйомний механізм AVENTOS_HF_B1\t1471.0799560546875\t2\t2942.159912109375\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_A1-AKC02 1\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_A1-AKC02 1\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_A1-AKC02\tПідйомний механізм AVENTOS_HF_A1\t1884.8399658203125\t1\t1884.8399658203125\n" +
                 "K04-KORPUS-BK-ROZW_MAXI_A1-AKC01 3\n" +
+                "K04-KORPUS-BK-ROZW_MAXI_A1-AKC01 3\n" +
+                "K04-KORPUS-BK-ROZW_MAXI_A1-AKC01\tПідйомний механізм ROZW_MAXI_A1\t372.510009765625\t3\t1117.530029296875\n" +
                 "K04-KORPUS-SZ-DST_90_W-KOR01 2\n" +
-                "K04-KORPUS-SZ-DSI_90_N-KOR01 1\n";
+                "K04-KORPUS-SZ-DST_90_W-KOR01 2\n" +
+                "K04-KORPUS-SZ-DST_90_W-KOR01\tШухляда Tandembox SZ DST_90_W\t2800.580078125\t2\t5601.16015625\n" +
+                "K04-KORPUS-SZ-DSI_90_N-KOR01 1\n" +
+                "K04-KORPUS-SZ-DSI_90_N-KOR01 1\n" +
+                "K04-KORPUS-SZ-DSI_90_N-KOR01\tШухляда Intivo SZ DSI_90_N\t2054.639892578125\t1\t2054.639892578125\n";
         assertEquals(actusal, expected);
 
     }
@@ -685,13 +701,29 @@ public class IntegrationTest {
                 "KOR-GOO_60/50 1\n" +
                 "K04-KORPUS-BEJ-GOO_60/50-KOR+AKC02\tКорпус Беж Ясний GOO_60/50\t878.4400024414062\t1\t878.4400024414062\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_A2-AKC02 1\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_A2-AKC02 1\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_A2-AKC02\tПідйомний механізм AVENTOS_HF_A2\t2115.0\t1\t2115.0\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_C1-AKC02 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_C1-AKC02 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_C1-AKC02\tПідйомний механізм AVENTOS_HF_C1\t553.27001953125\t2\t1106.5400390625\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_D1-AKC01 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_D1-AKC01 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_D1-AKC01\tПідйомний механізм AVENTOS_HF_D1\t287.7200012207031\t2\t575.4400024414062\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_B1-AKC02 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_B1-AKC02 2\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_B1-AKC02\tПідйомний механізм AVENTOS_HF_B1\t1471.0799560546875\t2\t2942.159912109375\n" +
                 "K04-KORPUS-BK-AVENTOS_HF_A1-AKC02 1\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_A1-AKC02 1\n" +
+                "K04-KORPUS-BK-AVENTOS_HF_A1-AKC02\tПідйомний механізм AVENTOS_HF_A1\t1884.8399658203125\t1\t1884.8399658203125\n" +
                 "K04-KORPUS-BK-ROZW_MAXI_A1-AKC01 3\n" +
+                "K04-KORPUS-BK-ROZW_MAXI_A1-AKC01 3\n" +
+                "K04-KORPUS-BK-ROZW_MAXI_A1-AKC01\tПідйомний механізм ROZW_MAXI_A1\t372.510009765625\t3\t1117.530029296875\n" +
                 "K04-KORPUS-SZ-DST_90_W-KOR01 2\n" +
-                "K04-KORPUS-SZ-DSI_90_N-KOR01 1\n";
+                "K04-KORPUS-SZ-DST_90_W-KOR01 2\n" +
+                "K04-KORPUS-SZ-DST_90_W-KOR01\tШухляда Tandembox SZ DST_90_W\t2800.580078125\t2\t5601.16015625\n" +
+                "K04-KORPUS-SZ-DSI_90_N-KOR01 1\n" +
+                "K04-KORPUS-SZ-DSI_90_N-KOR01 1\n" +
+                "K04-KORPUS-SZ-DSI_90_N-KOR01\tШухляда Intivo SZ DSI_90_N\t2054.639892578125\t1\t2054.639892578125\n";
         assertEquals(actusal, expected);
 
     }

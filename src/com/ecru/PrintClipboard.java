@@ -1,9 +1,6 @@
 package com.ecru;
 
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -72,7 +69,6 @@ public class PrintClipboard {
             if (clipboard[i].getName().startsWith("KOR")){
                 System.out.println(clipboard[i].getName() + " " + clipboard[i].getCount());
                 Nomenclature nomenclatureKorpus = nomenclature.getNomeclatureKorpus(
-                        arrayKorpusColors[selectedKorpusColorIndex].getName(),
                         //KORPUS Color
                         arrayKorpusColors[selectedKorpusColorIndex].getKod(),
                         //KORPUS sizeType
@@ -82,8 +78,17 @@ public class PrintClipboard {
                         nomenclatureKorpus.getPrice() + "\t" +
                         clipboard[i].getCount() + "\t" +
                         clipboard[i].getCount()*nomenclatureKorpus.getPrice());
-
             }
+            if (clipboard[i].getName().startsWith("K04")||clipboard[i].getName().startsWith("SK")){
+                System.out.println(clipboard[i].getName() + " " + clipboard[i].getCount());
+                Nomenclature nomenclatureFullKod = nomenclature.getNomenclatureByKod(clipboard[i].getName());
+                System.out.println(nomenclatureFullKod.getKod()    + "\t" +
+                        nomenclatureFullKod.getName()  + "\t" +
+                        nomenclatureFullKod.getPrice() + "\t" +
+                        clipboard[i].getCount() + "\t" +
+                        clipboard[i].getCount()*nomenclatureFullKod.getPrice());
+            }
+
         }
 
     }

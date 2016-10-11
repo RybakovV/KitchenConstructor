@@ -52,7 +52,7 @@ public class Nomenclature {
         this.price = price;
     }
 
-    public Nomenclature getNomeclatureKorpus(String korpusName, String colorKod, String sizeType) {
+    public Nomenclature getNomeclatureKorpus(String colorKod, String sizeType) {
         Statement statement;
         Nomenclature nomenclature = new Nomenclature("","",0.0);
         String kod = "K04-KORPUS-";
@@ -65,13 +65,13 @@ public class Nomenclature {
             kod += "-";
             kod += sizeType;
             kod += "-KOR01";
-            nomenclature = nomenclatureInSensoPrice(kod);
+            nomenclature = getNomenclatureByKod(kod);
             if (nomenclature==null){
                 System.out.println(kod + " do not finde in price. Correct please:");
                 Scanner scanner = new Scanner(System.in);
                 System.out.print(kod);
                 kod = scanner.nextLine();
-                nomenclature = nomenclatureInSensoPrice(kod);
+                nomenclature = getNomenclatureByKod(kod);
                 if (nomenclature==null){
                     nomenclature = new Nomenclature(kod,"do not definathion",0.0);
                 }
@@ -103,13 +103,13 @@ public class Nomenclature {
             kod += "-";
             kod += sizeType;
             kod += "-FRN01";
-            nomenclature = nomenclatureInSensoPrice(kod);
+            nomenclature = getNomenclatureByKod(kod);
             if (nomenclature==null){
                 System.out.println(kod + " do not finde in price. Correct please:");
                 Scanner scanner = new Scanner(System.in);
                 System.out.print(kod);
                 kod = scanner.nextLine();
-                nomenclature = nomenclatureInSensoPrice(kod);
+                nomenclature = getNomenclatureByKod(kod);
                 if (nomenclature==null){
                     nomenclature = new Nomenclature(kod,"do not definathion",0.0);
                 }
@@ -123,7 +123,7 @@ public class Nomenclature {
         return nomenclature;
     }
 
-    public Nomenclature nomenclatureInSensoPrice(String kod) {
+    public Nomenclature getNomenclatureByKod(String kod) {
         Statement statement;
         ResultSet resultSet;
         Nomenclature nomenclature = null;
