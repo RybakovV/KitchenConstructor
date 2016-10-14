@@ -39,5 +39,10 @@ public class Bender {
         windowMouse.setSize(400,400);
         windowMouse.setVisible(true);
 
+        GUIMouseWithAdapter windowMouseWithAdapter = new GUIMouseWithAdapter();
+        windowMouseWithAdapter.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        windowMouseWithAdapter.setSize(400,400);
+        windowMouseWithAdapter.setVisible(true);
+
     }
 }

@@ -3,6 +3,7 @@ package com.ecru.JframeJLabel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -27,50 +28,21 @@ public class GUIMouseWithAdapter extends JFrame {
         HandlerClass handler = new HandlerClass();
 
         jPanel.addMouseListener(handler);
-        jPanel.addMouseMotionListener(handler);
-
-
 
     }
 
-    private class HandlerClass implements MouseListener, MouseMotionListener{
-
-        @Override
+    private class HandlerClass extends MouseAdapter {
         public void mouseClicked(MouseEvent e) {
-            jLabel.setText(String.format("Ти нажав тут %s, %s", e.getX(), e.getY()));
-        }
+            String Datails = String.format("Ти клацнув %s раз",e.getClickCount());
+            if (e.isMetaDown()) {
+                Datails += "правою кнопкою";
+            }else if (e.isAltDown()) {
+                Datails += "центральною кнопкою";
+            }else {
+                Datails += "лівою кнопкою";
+            }
 
-        @Override
-        public void mousePressed(MouseEvent e) {
-            jLabel.setText("Ти нажав кнопку");
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            jLabel.setText("Ти відпустив кнопку");
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            jLabel.setText("Ти завів мишку у вікно");
-            jPanel.setBackground(Color.GREEN);
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            jLabel.setText("Ти вивів мишку з вікна");
-
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            jLabel.setText("Ти тягаєш мишку");
-
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e) {
-            jLabel.setText("Ти водиш мишкою");
+            jLabel.setText(Datails);
         }
     }
 }
