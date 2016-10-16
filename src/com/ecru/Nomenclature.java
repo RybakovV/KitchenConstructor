@@ -67,14 +67,16 @@ public class Nomenclature {
             kod += "-KOR01";
             nomenclature = getNomenclatureByKod(kod);
             if (nomenclature==null){
+/*
                 System.out.println(kod + " do not finde in price. Correct please:");
                 Scanner scanner = new Scanner(System.in);
                 System.out.print(kod);
                 kod = scanner.nextLine();
                 nomenclature = getNomenclatureByKod(kod);
                 if (nomenclature==null){
+*/
                     nomenclature = new Nomenclature(kod,"do not definathion",0.0);
-                }
+//                }
             }
             resultSet.close();
             statement.close();
@@ -105,14 +107,16 @@ public class Nomenclature {
             kod += "-FRN01";
             nomenclature = getNomenclatureByKod(kod);
             if (nomenclature==null){
+/*
                 System.out.println(kod + " do not finde in price. Correct please:");
                 Scanner scanner = new Scanner(System.in);
                 System.out.print(kod);
                 kod = scanner.nextLine();
                 nomenclature = getNomenclatureByKod(kod);
                 if (nomenclature==null){
+*/
                     nomenclature = new Nomenclature(kod,"do not definathion",0.0);
-                }
+//                }
             }
             resultSet.close();
             statement.close();

@@ -9,6 +9,7 @@ import java.util.Arrays;
  */
 public class DataSet {
 
+
     private String name;
     private int count;
 
@@ -49,7 +50,10 @@ public class DataSet {
         String workData[] = new String[allData.length];
         int indexOKData = 0;
         for (String data: allData) {
-            if ((data.startsWith("FRN")) || (data.startsWith("KOR")) || (data.startsWith("K04"))){
+            if ((data.startsWith("FRN")) ||
+                    (data.startsWith("KOR")) ||
+                    (data.startsWith("K04"))||
+                    (data.startsWith("SK"))){
                 workData[indexOKData] = data;
                 indexOKData++;
             }
