@@ -55,4 +55,15 @@ public class Front {
         return result;
     }
 
+    public String[] getFrontsNames(Front[] fronts) {
+        String[] frontsNames = new String[fronts.length];
+        int indexFront = 0;
+        for (Front frontIndex: fronts) {
+            frontsNames[indexFront] = frontIndex.getName();
+            indexFront++;
+        }
+        return frontsNames;
+    }
+
+
 }

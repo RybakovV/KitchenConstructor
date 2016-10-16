@@ -54,5 +54,15 @@ public class Color {
         return Arrays.copyOfRange(result,0,index);
     }
 
+    public String[] getColorsNames(Color[] colors) {
+        String[] colorNames = new String[colors.length];
+        int colorIndex = 0;
+        for (Color color: colors) {
+            colorNames[colorIndex] = color.getName();
+            colorIndex++;
+        }
+        return colorNames;
+    }
+
 
 }

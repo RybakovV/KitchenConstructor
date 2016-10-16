@@ -44,5 +44,10 @@ public class Bender {
         windowMouseWithAdapter.setSize(400,400);
         windowMouseWithAdapter.setVisible(true);
 
+        GUIJTable windowJTable = new GUIJTable();
+        windowJTable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        windowJTable.setSize(600,600);
+        windowJTable.setVisible(true);
+
     }
 }
