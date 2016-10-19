@@ -164,4 +164,14 @@ public class Nomenclature {
         return nomenclature;
     }
 
+    public Nomenclature getNomenclature(String kodPRO100, String Name, String color) {
+        if (kodPRO100.startsWith("FRN")){
+            return getNomeclatureFront(name, color, kodPRO100.substring(4));
+        }else if(kodPRO100.startsWith("KOR")){
+            return getNomeclatureKorpus(color,kodPRO100.substring(4));
+        }else if (kodPRO100.startsWith("K04")|| kodPRO100.startsWith("SK")){
+            return getNomenclatureByKod(kodPRO100);
+        }
+        return new Nomenclature(kodPRO100,"do not definathion",0.0);
+    }
 }
