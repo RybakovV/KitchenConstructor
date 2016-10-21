@@ -1,5 +1,6 @@
 package com.ecru;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,11 +14,11 @@ public class Nomenclature {
     private Connection connection;
     private  String kod;
     private String name;
-    private double price;
+    private BigDecimal price;
     private DataBaseManager manager;
 
 
-    public Nomenclature(String kod, String name, double price) {
+    public Nomenclature(String kod, String name, BigDecimal price) {
         this.kod = kod;
         this.name = name;
         this.price = price;
@@ -36,7 +37,7 @@ public class Nomenclature {
         return name;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -48,13 +49,13 @@ public class Nomenclature {
         this.name = name;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
     public Nomenclature getNomeclatureKorpus(String colorKod, String sizeType) {
         Statement statement;
-        Nomenclature nomenclature = new Nomenclature("","",0.0);
+        Nomenclature nomenclature = new Nomenclature("","",BigDecimal.ZERO);
         String kod = "K04-KORPUS-";
         try {
             statement = connection.createStatement();
@@ -75,7 +76,7 @@ public class Nomenclature {
                 nomenclature = getNomenclatureByKod(kod);
                 if (nomenclature==null){
 */
-                    nomenclature = new Nomenclature(kod,"do not definathion",0.0);
+                    nomenclature = new Nomenclature(kod,"do not definathion",BigDecimal.ZERO);
 //                }
             }
             resultSet.close();
@@ -90,12 +91,13 @@ public class Nomenclature {
 
     public Nomenclature getNomeclatureFront(String frontName, String colorKod, String sizeType) {
         Statement statement;
-        Nomenclature nomenclature = new Nomenclature("","",0.0);
+        Nomenclature nomenclature = new Nomenclature("","",BigDecimal.ZERO);
         String kod = "K04-";
         try {
             statement = connection.createStatement();
             ResultSet resultSet;
-            resultSet = statement.executeQuery("SELECT  `kod` FROM `kitchenkonstructor`.`frn` WHERE `name` LIKE '%" + frontName + "%'");
+            //resultSet = statement.executeQuery("SELECT  `kod` FROM `kitchenkonstructor`.`frn` WHERE `name` LIKE '%" + frontName + "%'");
+            resultSet = statement.executeQuery("SELECT  `kod` FROM `kitchenkonstructor`.`frn` WHERE `name` LIKE '" + frontName + "'");
             resultSet.next();
             kod += resultSet.getString(1);
             kod += "-";
@@ -115,7 +117,7 @@ public class Nomenclature {
                 nomenclature = getNomenclatureByKod(kod);
                 if (nomenclature==null){
 */
-                    nomenclature = new Nomenclature(kod,"do not definathion",0.0);
+                    nomenclature = new Nomenclature(kod,"do not definathion",BigDecimal.ZERO);
 //                }
             }
             resultSet.close();
@@ -135,25 +137,25 @@ public class Nomenclature {
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price`  FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '" + kod + "'");
             if (resultSet.next()){
-                nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), Float.valueOf(resultSet.getString("price")));
+                nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), BigDecimal.valueOf(Double.valueOf(resultSet.getString("price"))));
             } else{
                 kod = kod.substring(0,kod.length()-1);
                 kod+="2";
                 resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price`  FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '" + kod + "'");
                 if (resultSet.next()){
-                    nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), Float.valueOf(resultSet.getString("price")));
+                    nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), BigDecimal.valueOf(Double.valueOf(resultSet.getString("price"))));
                 }else {
                     kod = kod.substring(0,kod.length()-2);
                     kod+="+AKC01";
                     resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price`  FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '" + kod + "'");
                     if (resultSet.next()) {
-                        nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), Float.valueOf(resultSet.getString("price")));
+                        nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), BigDecimal.valueOf(Double.valueOf(resultSet.getString("price"))));
                     } else{
                         kod = kod.substring(0,kod.length()-1);
                         kod+="2";
                         resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price`  FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '" + kod + "'");
                         if (resultSet.next()) {
-                            nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), Float.valueOf(resultSet.getString("price")));
+                            nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), BigDecimal.valueOf(Double.valueOf(resultSet.getString("price"))));
                         }
                     }
                 }
@@ -164,14 +166,4 @@ public class Nomenclature {
         return nomenclature;
     }
 
-    public Nomenclature getNomenclature(String kodPRO100, String Name, String color) {
-        if (kodPRO100.startsWith("FRN")){
-            return getNomeclatureFront(name, color, kodPRO100.substring(4));
-        }else if(kodPRO100.startsWith("KOR")){
-            return getNomeclatureKorpus(color,kodPRO100.substring(4));
-        }else if (kodPRO100.startsWith("K04")|| kodPRO100.startsWith("SK")){
-            return getNomenclatureByKod(kodPRO100);
-        }
-        return new Nomenclature(kodPRO100,"do not definathion",0.0);
-    }
 }

@@ -1,5 +1,6 @@
 package com.ecru;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -64,7 +65,7 @@ public class PrintClipboard {
                                     nomenclatureFront.getName()  + "\t" +
                                     nomenclatureFront.getPrice() + "\t" +
                                     clipboard[i].getCount() + "\t" +
-                                    clipboard[i].getCount()*nomenclatureFront.getPrice());
+                                    nomenclatureFront.getPrice().multiply(BigDecimal.valueOf(clipboard[i].getCount())));
             }
             if (clipboard[i].getName().startsWith("KOR")){
                 System.out.println(clipboard[i].getName() + " " + clipboard[i].getCount());
@@ -77,7 +78,7 @@ public class PrintClipboard {
                         nomenclatureKorpus.getName()  + "\t" +
                         nomenclatureKorpus.getPrice() + "\t" +
                         clipboard[i].getCount() + "\t" +
-                        clipboard[i].getCount()*nomenclatureKorpus.getPrice());
+                        nomenclatureKorpus.getPrice().multiply(BigDecimal.valueOf(clipboard[i].getCount())));
             }
             if (clipboard[i].getName().startsWith("K04")||clipboard[i].getName().startsWith("SK")){
                 System.out.println(clipboard[i].getName() + " " + clipboard[i].getCount());
@@ -86,7 +87,7 @@ public class PrintClipboard {
                         nomenclatureFullKod.getName()  + "\t" +
                         nomenclatureFullKod.getPrice() + "\t" +
                         clipboard[i].getCount() + "\t" +
-                        clipboard[i].getCount()*nomenclatureFullKod.getPrice());
+                        nomenclatureFullKod.getPrice().multiply(BigDecimal.valueOf(clipboard[i].getCount())));
             }
 
         }

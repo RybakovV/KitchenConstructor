@@ -6,13 +6,10 @@ package com.ecru;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Arc2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
+import java.math.BigDecimal;
 
 
 /**
@@ -23,6 +20,7 @@ public class GUI extends JFrame {
     private static final int MAXIMUM_USE_FRONT = 3; //TODO Analitics
     private static final int MAXIMUM_USE_COLOR_FRONT = 0; //TODO Analitics
     private static final int MAXIMUM_USE_COLOR_KORPUS = 3;  //TODO Analitics
+
     private final JComboBox jComboBoxColorsMainKorpus;
     private final JPanel jPanelColorsKorpus;
     private final JPanel jPanelButtons;
@@ -35,6 +33,11 @@ public class GUI extends JFrame {
     private final JLabel jLabelColorsMainKorpus;
     private final JLabel jLabelColorsAdditionKorpus;
     private final JComboBox jComboBoxColorsAdditionKorpus;
+    private final JButton jButtonAddRows;
+    private final Front[] arrayFronts;
+    private final JComboBox jComboBoxFrontInTable;
+    private JComboBox jComboBoxColorsFrontInTable;
+    private TableColumn typeColumn;
     private Color[] arrayColorsMainFront;
     private Color[] arrayColorsAdditionFront;
     private final Color[] arrayKorpusColors;
@@ -52,19 +55,30 @@ public class GUI extends JFrame {
     private JTable jTableOrder;
     private JScrollPane jScrollPane;
 
-    private KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+
     private static final int NUMBER_ROW = 0;
+    private static final int NUMBER_ROW_WIDTH = 20;
     private static final int KOD_PRO100 = 1;
-    private static final int ARTIKLE = 2;
-    private static final int NAME = 3;
-    private static final int COUNT = 4;
-    private static final int PRICE = 5;
-    private static final int SUM = 6;
-    private String[] columnNames = {"№", "PRO100", "Артикул", "Назва", "Кількість", "Ціна", "Вартість"};
-    private String[][] data = {{"1","FRN_393/596_O", "K04-ML_NORDE-DCN-393/596_O-FRN02", "Фасад 36th Norde Avenue Дуб Canadian 393/596_O","1","325.25", "325.25"},
-                        {"2","FRN_570/596", "","","","",""},
-                        {"3","KOR-G_45/72", "1","","","",""},
-                        {"4","K04-KORPUS-BK-AVENTOS_HF_A2-AKC02", "1","","","",""}};
+    private static final int KOD_PRO100_WIDTH = 150;
+    private static final int TYPE = 2;
+    private static final int TYPE_WIDTH = 150;
+    private static final int COLOR = 3;
+    private static final int COLOR_WIDTH = 150;
+    private static final int ARTIKLE = 4;
+    private static final int ARTIKLE_WIDTH = 200;
+    private static final int NAME = 5;
+    private static final int NAME_WIDTH = 300;
+    private static final int COUNT = 6;
+    private static final int COUNT_WIDTH = 20;
+    private static final int PRICE = 7;
+    private static final int PRICE_WIDTH = 50;
+    private static final int SUM = 8;
+    private static final int SUM_WIDTH = 75;
+    private String[] columnNames = {"№", "PRO100","Фронт/Корпус", "Колір", "Артикул", "Назва", "Кількість", "Ціна", "Вартість"};
+    private String[][] data = {{"1","FRN_393/596_O","36th Norde Avenue", "Дуб Canadian", "K04-ML_NORDE-DCN-393/596_O-FRN02", "Фасад 36th Norde Avenue Дуб Canadian 393/596_O","1","325.25", "325.25"},
+                        {"2","FRN_570/596", "","","","","","",""},
+                        {"3","KOR-G_45/72", "1","","","","","",""},
+                        {"4","K04-KORPUS-BK-AVENTOS_HF_A2-AKC02", "1","","","","","",""}};
     private double sum;
 
     public GUI() {
@@ -74,7 +88,7 @@ public class GUI extends JFrame {
         manager = new DataBaseManager();
         manager.connectToDataBase("kitchenkonstructor", "root", "root");
         front = new Front(manager);
-        Front[] arrayFronts = front.arrayFronts();
+        arrayFronts = front.arrayFronts();
         color = new Color(manager);
         Dimension dimensionPanels = new Dimension(320,133);
         Dimension dimensionComboBox = new Dimension(295,25);
@@ -99,10 +113,7 @@ public class GUI extends JFrame {
         jPanelFronts.add(jComboBoxAdditionFront);
         add(jPanelFronts);
 
-
-
         arrayColorsMainFront = color.arrayColors(arrayFronts[jComboBoxMainFront.getSelectedIndex()].getKod());
-
 
         jLabelColorsMainFront = new JLabel("Основний");
         jComboBoxColorsMainFront = new JComboBox(color.getColorsNames(arrayColorsMainFront));
@@ -150,17 +161,29 @@ public class GUI extends JFrame {
         jButtonGetFromClipboard = new JButton(new ImageIcon("editpaste_32.png"));
         jButtonGetFromClipboard.setToolTipText("Вставити з буферу обміну");
         jPanelButtons.add(jButtonGetFromClipboard);
+        jButtonAddRows = new JButton(new ImageIcon("add_32.png"));
+        jButtonAddRows.setToolTipText("Добавити рядок");
+        jPanelButtons.add(jButtonAddRows);
         jLabel = new JLabel("rcwercw");
         jPanelButtons.add(jLabel);
         add(jPanelButtons);
 
         jTableOrder = new JTable(data, columnNames);
-        jTableOrder.setPreferredScrollableViewportSize(new Dimension(800, 600));
+        jTableOrder.setPreferredScrollableViewportSize(new Dimension(967, 600));
         jTableOrder.setFillsViewportHeight(true);
+        setColumnWidth();
+        jComboBoxFrontInTable = new JComboBox(front.getFrontsNames(arrayFronts));
+        jComboBoxColorsFrontInTable = new JComboBox(color.getColorsNames(arrayColorsMainFront));
+        typeColumn = jTableOrder.getColumnModel().getColumn(TYPE);
+        typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxFrontInTable));
+        typeColumn = jTableOrder.getColumnModel().getColumn(COLOR);
+        typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxColorsFrontInTable));
+
         jScrollPane = new JScrollPane(jTableOrder);
         add(jScrollPane);
-
         jTableOrder.setCellSelectionEnabled(true);//so ass select only one cell
+
+
         jTableOrder.getDefaultEditor(String.class).addCellEditorListener(new CellEditorListener() {
             @Override
             public void editingStopped(ChangeEvent e) {
@@ -168,6 +191,7 @@ public class GUI extends JFrame {
                 int selectedColumn = jTableOrder.getSelectedColumn();
                 String selectedCellData = String.valueOf(jTableOrder.getValueAt(selectedRow, selectedColumn));
                 jLabel.setText("editing row " + selectedRow + " column " + selectedColumn + " " + selectedCellData);
+                int count = getCount(selectedRow);
                 if (selectedColumn == KOD_PRO100) {
                     String kodPRO100 = selectedCellData;
                     Nomenclature nomenclature = new Nomenclature(manager);
@@ -176,49 +200,82 @@ public class GUI extends JFrame {
                                 arrayFronts[jComboBoxMainFront.getSelectedIndex()].getName(),
                                 arrayColorsMainFront[jComboBoxColorsMainFront.getSelectedIndex()].getKod(),
                                 kodPRO100.substring(4));
-
-                        jTableOrder.setValueAt(nomenclatureFront.getKod(), selectedRow, ARTIKLE);
-                        jTableOrder.setValueAt(nomenclatureFront.getName(), selectedRow, NAME);
-                        jTableOrder.setValueAt(nomenclatureFront.getPrice(), selectedRow, PRICE);
-                        int count = Integer.parseInt(String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT)));
-                        jTableOrder.setValueAt(nomenclatureFront.getPrice()*count, selectedRow, SUM);
-                        double sum = getSum();
-                        jTableOrder.setValueAt(sum, jTableOrder.getRowCount()-1, SUM);
+                        insertNomenclature(nomenclatureFront);
                     }
                     if (kodPRO100.startsWith("KOR")) {
                         Nomenclature nomenclatureKorpus = nomenclature.getNomeclatureKorpus(
                                 arrayKorpusColors[jComboBoxColorsMainKorpus.getSelectedIndex()].getKod(),
                                 kodPRO100.substring(4));
-                        jTableOrder.setValueAt(nomenclatureKorpus.getKod(), selectedRow, ARTIKLE);
-                        jTableOrder.setValueAt(nomenclatureKorpus.getName(), selectedRow, NAME);
-                        jTableOrder.setValueAt(nomenclatureKorpus.getPrice(), selectedRow, PRICE);
-                        int count = Integer.parseInt(String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT)));
-                        jTableOrder.setValueAt(nomenclatureKorpus.getPrice()*count, selectedRow, SUM);
-                        double sum = getSum();
-                        jTableOrder.setValueAt(sum, jTableOrder.getRowCount()-1, SUM);
-
+                        insertNomenclature(nomenclatureKorpus);
                     }
                     if (kodPRO100.startsWith("K04") || kodPRO100.startsWith("SK")) {
                         Nomenclature nomenclatureFullKod = nomenclature.getNomenclatureByKod(kodPRO100);
-                        jTableOrder.setValueAt(nomenclatureFullKod.getKod(), selectedRow, ARTIKLE);
-                        jTableOrder.setValueAt(nomenclatureFullKod.getName(), selectedRow, NAME);
-                        jTableOrder.setValueAt(nomenclatureFullKod.getPrice(), selectedRow, PRICE);
-                        int count = Integer.parseInt(String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT)));
-                        jTableOrder.setValueAt(nomenclatureFullKod.getPrice()*count, selectedRow, SUM);
-                        double sum = getSum();
-                        jTableOrder.setValueAt(sum, jTableOrder.getRowCount()-1, SUM);
-                    }
+                        insertNomenclature(nomenclatureFullKod);                    }
                 }else if (selectedColumn == COUNT){
-                    double price = Double.valueOf(String.valueOf(jTableOrder.getValueAt(selectedRow,PRICE)));
-                    int count = Integer.valueOf(String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT)));
-                    double sum = price * count;
-                    jTableOrder.setValueAt(sum, selectedRow, SUM);
-                    jTableOrder.setValueAt(getSum(), jTableOrder.getRowCount()-1, SUM);
+                    BigDecimal price = BigDecimal.valueOf(Double.valueOf(String.valueOf(jTableOrder.getValueAt(selectedRow,PRICE))));
+                    BigDecimal sum = price.multiply(BigDecimal.valueOf(count));
+                    jTableOrder.setValueAt(String.valueOf(sum), selectedRow, SUM);
+                    sum = getTotalSum();
+                    jTableOrder.setValueAt(String.valueOf(sum), jTableOrder.getRowCount()-1, SUM);
+                }else if (selectedColumn == TYPE){
+                    jComboBoxColorsFrontInTable.removeAll();
+                    Color[] arrayColors = color.arrayColors(arrayFronts[jComboBoxFrontInTable.getSelectedIndex()].getKod());
+                    String[] colorsNames = color.getColorsNames(arrayColors);
+                    for (int i = 0; i < arrayColors.length; i++) {
+                        jComboBoxColorsFrontInTable.addItem(colorsNames[i]);
+                    }
+
+                    typeColumn = jTableOrder.getColumnModel().getColumn(COLOR);
+                    typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxColorsFrontInTable));
                 }
             }
 
             @Override
             public void editingCanceled(ChangeEvent e) {
+
+            }
+        });
+        jButtonAddRows.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = jTableOrder.getSelectedRow();
+                int selectedColumn = jTableOrder.getSelectedColumn();
+                data = getDataFromTable();
+                String[][] newData = new String[data.length+1][columnNames.length];
+                for (int i = 0; i <= selectedRow; i++) {
+                    newData[i] = data[i];
+                }
+                newData[selectedRow+1] = new String[columnNames.length];
+                for (int i = 0; i < columnNames.length ; i++) {
+                    newData[selectedRow+1][i] = data[selectedRow][i];
+                }
+                for (int i = selectedRow+2; i < newData.length; i++) {
+                    newData[i] = data[i-1];
+                    newData[i][NUMBER_ROW] = String.valueOf(i+1);
+                }
+/*
+                for (int i = 0; i < newData.length-1; i++) {
+                    newData[i][NUMBER_ROW] = String.valueOf(i+1);
+                }
+*/
+                newData[newData.length-1][NUMBER_ROW] = "";
+                newData[newData.length-1][KOD_PRO100] = "";
+                newData[newData.length-1][TYPE] = "";
+                newData[newData.length-1][COLOR] = "";
+                newData[newData.length-1][ARTIKLE] = "";
+                newData[newData.length-1][NAME] = "";
+                newData[newData.length-1][COUNT] = "";
+                data = newData;
+                DefaultTableModel model = new DefaultTableModel(data, columnNames);
+                jTableOrder.setModel(model);
+                setColumnWidth();
+                jTableOrder.addRowSelectionInterval(selectedRow+1,selectedRow+1);
+                jTableOrder.addColumnSelectionInterval(selectedColumn,selectedColumn);
+                jComboBoxFrontInTable.removeAll();
+                jComboBoxFrontInTable.addItem(front.getFrontsNames(arrayFronts));
+                TableColumn typeColumn = jTableOrder.getColumnModel().getColumn(TYPE);
+                typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxFrontInTable));
+
 
             }
         });
@@ -229,10 +286,26 @@ public class GUI extends JFrame {
 
                 DataSet dataSet = new DataSet();
                 DataSet[] clipboard = dataSet.splitClipboard();
-                String[][] data = getData(clipboard, arrayFronts, arrayColorsMainFront, arrayKorpusColors);
-
+                data = getData(clipboard, arrayFronts, arrayColorsMainFront, arrayKorpusColors);
                 DefaultTableModel model = new DefaultTableModel(data, columnNames);
                 jTableOrder.setModel(model);
+                TableColumn typeColumn = jTableOrder.getColumnModel().getColumn(TYPE);
+                typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxFrontInTable));
+
+                setColumnWidth();
+            }
+        });
+
+        jComboBoxFrontInTable.addItemListener(new ItemListener(){
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                Color[] arrayColors = color.arrayColors(arrayFronts[jComboBoxFrontInTable.getSelectedIndex()].getKod());
+                String[] colorsNames = color.getColorsNames(arrayColors);
+                jComboBoxColorsFrontInTable = new JComboBox(colorsNames);
+                typeColumn = jTableOrder.getColumnModel().getColumn(COLOR);
+                typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxColorsFrontInTable));
+
             }
         });
 
@@ -257,64 +330,119 @@ public class GUI extends JFrame {
                 for (String colorName: colorsNames) {
                     jComboBoxColorsAdditionFront.addItem(colorName);
                 }
-
             }
         });
 
     }
 
+    private void setColumnWidth() {
+        jTableOrder.getColumnModel().getColumn(NUMBER_ROW).setMaxWidth(NUMBER_ROW_WIDTH);
+        jTableOrder.getColumnModel().getColumn(KOD_PRO100).setMaxWidth(KOD_PRO100_WIDTH);
+        jTableOrder.getColumnModel().getColumn(TYPE).setMaxWidth(TYPE_WIDTH);
+        jTableOrder.getColumnModel().getColumn(COLOR).setMaxWidth(COLOR_WIDTH);
+        jTableOrder.getColumnModel().getColumn(ARTIKLE).setMaxWidth(ARTIKLE_WIDTH);
+        jTableOrder.getColumnModel().getColumn(NAME).setMaxWidth(NAME_WIDTH);
+        jTableOrder.getColumnModel().getColumn(COUNT).setMaxWidth(COUNT_WIDTH);
+        jTableOrder.getColumnModel().getColumn(PRICE).setMaxWidth(PRICE_WIDTH);
+        jTableOrder.getColumnModel().getColumn(SUM).setMaxWidth(SUM_WIDTH);
+    }
+
+    private String[][] getDataFromTable() {
+        String[][] result = new String[jTableOrder.getRowCount()][jTableOrder.getColumnCount()];
+        for (int i = 0; i < jTableOrder.getRowCount(); i++) {
+            for (int j = 0; j < jTableOrder.getColumnCount(); j++) {
+                String cellData = String.valueOf(jTableOrder.getValueAt(i,j));
+                if (cellData.isEmpty()){
+                    result[i][j] = "";
+                }else {
+                    result[i][j] = String.valueOf(jTableOrder.getValueAt(i,j));
+                }
+            }
+        }
+        return result;
+    }
+
+    private void insertNomenclature(Nomenclature nomenclature) {
+        int selectedRow = jTableOrder.getSelectedRow();
+        int count = getCount(selectedRow);
+        jTableOrder.setValueAt(nomenclature.getKod(), selectedRow, ARTIKLE);
+        jTableOrder.setValueAt(nomenclature.getName(), selectedRow, NAME);
+        jTableOrder.setValueAt(String.valueOf(nomenclature.getPrice()), selectedRow, PRICE);
+        BigDecimal sum = nomenclature.getPrice().multiply(BigDecimal.valueOf(count));
+        jTableOrder.setValueAt(String.valueOf(sum), selectedRow, SUM);
+        sum = getTotalSum();
+        jTableOrder.setValueAt(String.valueOf(sum), jTableOrder.getRowCount()-1, SUM);
+    }
+
+    private int getCount(int selectedRow) {
+        if (String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT)).equals("")){
+            jTableOrder.setValueAt("1", selectedRow, COUNT);
+            return 1;
+        }else {
+            return Integer.parseInt(String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT)));
+        }
+    }
+
     private String[][] getData(DataSet[] clipboard, Front[] arrayFronts, Color[] arrayColors, Color[] arrayKorpusColors) {
-        String[][] data = new String [clipboard.length+1][7];
-        double totalSum = 0;
-        double sum;
+        String[][] data = new String [clipboard.length+1][columnNames.length];
+        BigDecimal totalSum = BigDecimal.ZERO;
+        BigDecimal sum;
         for (int i = 0; i < clipboard.length; i++) {
-            sum = 0;
-            data[i][0] = String.valueOf(i);
-            data[i][1] = clipboard[i].getName();
+            sum = BigDecimal.ZERO;
+            data[i][NUMBER_ROW] = String.valueOf(i+1);
+            data[i][KOD_PRO100] = clipboard[i].getName();
+            data[i][COUNT] = String.valueOf(clipboard[i].getCount());
             Nomenclature nomenclature = new Nomenclature(manager);
             if (clipboard[i].getName().startsWith("FRN")){
                 Nomenclature nomenclatureFront = nomenclature.getNomeclatureFront(
                         arrayFronts[jComboBoxMainFront.getSelectedIndex()].getName(),
                         arrayColors[jComboBoxColorsMainFront.getSelectedIndex()].getKod(),
                         clipboard[i].getName().substring(4));
-                data[i][2] = nomenclatureFront.getKod();
-                data[i][3] = nomenclatureFront.getName();
-                data[i][5] = String.valueOf(nomenclatureFront.getPrice());
-                sum = clipboard[i].getCount()*nomenclatureFront.getPrice();
-                data[i][6] = String.valueOf(sum);
+                data[i][TYPE] = arrayFronts[jComboBoxMainFront.getSelectedIndex()].getName();
+                data[i][COLOR] = arrayColors[jComboBoxColorsMainFront.getSelectedIndex()].getName();
+                data[i][ARTIKLE] = nomenclatureFront.getKod();
+                data[i][NAME] = nomenclatureFront.getName();
+                data[i][PRICE] = String.valueOf(nomenclatureFront.getPrice());
+                sum = nomenclatureFront.getPrice().multiply(BigDecimal.valueOf(clipboard[i].getCount()));
+                data[i][SUM] = String.valueOf(sum);
             }
             if (clipboard[i].getName().startsWith("KOR")){
                 Nomenclature nomenclatureKorpus = nomenclature.getNomeclatureKorpus(
                         arrayKorpusColors[jComboBoxColorsMainKorpus.getSelectedIndex()].getKod(),
                         clipboard[i].getName().substring(4));
-                data[i][2] = nomenclatureKorpus.getKod();
-                data[i][3] = nomenclatureKorpus.getName();
-                data[i][5] = String.valueOf(nomenclatureKorpus.getPrice());
-                sum = clipboard[i].getCount()*nomenclatureKorpus.getPrice();
-                data[i][6] = String.valueOf(sum);
+                data[i][TYPE] = "Корпус";
+                data[i][COLOR] = arrayKorpusColors[jComboBoxColorsMainKorpus.getSelectedIndex()].getName();
+                data[i][ARTIKLE] = nomenclatureKorpus.getKod();
+                data[i][NAME] = nomenclatureKorpus.getName();
+                data[i][PRICE] = String.valueOf(nomenclatureKorpus.getPrice());
+                sum = nomenclatureKorpus.getPrice().multiply(BigDecimal.valueOf(clipboard[i].getCount()));
+                data[i][SUM] = String.valueOf(sum);
 
             }
             if (clipboard[i].getName().startsWith("K04")||clipboard[i].getName().startsWith("SK")){
                 Nomenclature nomenclatureFullKod = nomenclature.getNomenclatureByKod(clipboard[i].getName());
-                data[i][2] = nomenclatureFullKod.getKod();
-                data[i][3] = nomenclatureFullKod.getName();
-                data[i][5] = String.valueOf(nomenclatureFullKod.getPrice());
-                sum = clipboard[i].getCount()*nomenclatureFullKod.getPrice();
-                data[i][6] = String.valueOf(sum);
+                data[i][TYPE] = "";
+                data[i][COLOR] = "";
+                data[i][ARTIKLE] = nomenclatureFullKod.getKod();
+                data[i][NAME] = nomenclatureFullKod.getName();
+                data[i][PRICE] = String.valueOf(nomenclatureFullKod.getPrice());
+                sum = nomenclatureFullKod.getPrice().multiply(BigDecimal.valueOf(clipboard[i].getCount()));
+                data[i][SUM] = String.valueOf(sum);
             }
-            totalSum += sum;
-            data[i][4] = String.valueOf(clipboard[i].getCount());
-
+            totalSum = totalSum.add(sum);
         }
-        data[clipboard.length][5] = "Загальна сума:";
-        data[clipboard.length][6] = String.valueOf(totalSum);
+        data[clipboard.length][NAME] = "Загальна сума:";
+        data[clipboard.length][SUM] = String.valueOf(totalSum);
         return data;
     }
 
-    public double getSum() {
-        double sum = 0;
+    public BigDecimal getTotalSum() {
+        BigDecimal sum = BigDecimal.ZERO;
         for (int row = 0; row < jTableOrder.getRowCount()-1 ; row++) {
-            sum = sum + Double.valueOf(String.valueOf(jTableOrder.getValueAt(row, 6)));
+            String price = String.valueOf(jTableOrder.getValueAt(row, SUM));
+            if (!price.isEmpty()){
+                sum = sum.add(BigDecimal.valueOf(Double.valueOf(price)));
+            }
         }
         return sum;
     }
