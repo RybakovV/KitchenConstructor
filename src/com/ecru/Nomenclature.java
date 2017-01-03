@@ -70,12 +70,53 @@ public class Nomenclature {
         }catch (SQLException e) {
             e.printStackTrace();
         }
-
-
         return result;
     }
 
-    public Nomenclature getNomeclatureKorpus(String colorKod, String sizeType) {
+    public List<Nomenclature> getNomenclatureFrontByType(String frontKod) {
+        List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
+        Nomenclature nomenclature;
+        frontKod = "K04-"+ frontKod + "-";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price` FROM " +
+                     "`kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%" + frontKod + "%'")){
+            while (resultSet.next()){
+                String kod = resultSet.getString("kod");
+                String name_ukr = resultSet.getString("name_ukr");
+                BigDecimal price = BigDecimal.valueOf(Double.valueOf(resultSet.getString("price")));
+                nomenclature = new Nomenclature(kod, name_ukr, price);
+                result.add(nomenclature);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+
+    }
+
+
+    public List<Nomenclature> getNomenclatureFrontByTypeAndColor(String frontKod, String colorKod) {
+        List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
+        Nomenclature nomenclature;
+        colorKod = "K04-"+ frontKod + "-"+colorKod;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price` FROM " +
+                     "`kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%" + colorKod + "%'")){
+            while (resultSet.next()){
+                String kod = resultSet.getString("kod");
+                String name_ukr = resultSet.getString("name_ukr");
+                BigDecimal price = BigDecimal.valueOf(Double.valueOf(resultSet.getString("price")));
+                nomenclature = new Nomenclature(kod, name_ukr, price);
+                result.add(nomenclature);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    public Nomenclature getNomenclatureKorpus(String colorKod, String sizeType) {
         Statement statement;
         Nomenclature nomenclature = new Nomenclature("","",BigDecimal.ZERO);
         String kod = "K04-KORPUS-";
@@ -111,7 +152,7 @@ public class Nomenclature {
 
     }
 
-    public Nomenclature getNomeclatureFront(String frontName, String colorKod, String sizeType) {
+    public Nomenclature getNomenclatureFront(String frontName, String colorKod, String sizeType) {
         Statement statement;
         Nomenclature nomenclature = new Nomenclature("","",BigDecimal.ZERO);
         String kod = "K04-";

@@ -57,7 +57,7 @@ public class PrintClipboard {
             System.out.println(clipboard[i].getName() + " " + clipboard[i].getCount());
             nomenclature = new Nomenclature(manager);
             if (clipboard[i].getName().startsWith("FRN")){
-                Nomenclature nomenclatureFront = nomenclature.getNomeclatureFront(
+                Nomenclature nomenclatureFront = nomenclature.getNomenclatureFront(
                         arrayFronts[selectedFrontIndex].getName(),
                         arrayColors[selectedColorIndex].getKod(),
                         clipboard[i].getName().substring(4));
@@ -69,7 +69,7 @@ public class PrintClipboard {
             }
             if (clipboard[i].getName().startsWith("KOR")){
                 System.out.println(clipboard[i].getName() + " " + clipboard[i].getCount());
-                Nomenclature nomenclatureKorpus = nomenclature.getNomeclatureKorpus(
+                Nomenclature nomenclatureKorpus = nomenclature.getNomenclatureKorpus(
                         //KORPUS Color
                         arrayKorpusColors[selectedKorpusColorIndex].getKod(),
                         //KORPUS sizeType

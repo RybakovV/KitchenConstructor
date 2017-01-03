@@ -3,6 +3,8 @@ package com.ecru;
 
 
 
+import com.sun.org.apache.xpath.internal.operations.Number;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.DefaultTableModel;
@@ -254,14 +256,14 @@ public class GUI extends JFrame {
                         for (int i = 0; i < dataOrder.length-1; i++) {
                             jProgressBar.setValue(i);
                             Nomenclature nomenclature = new Nomenclature(manager);
-                            int count = getCount(i);
+                            BigDecimal count = getCount(i);
                             if (dataOrder[i][KOD_PRO100].startsWith("FRN")){
                                 String selectedFrontName = dataOrder[i][TYPE];
                                 int indexSelectedFront = getIndexFront(selectedFrontName);
                                 Color[] arrayColors = color.arrayColors(arrayFronts[indexSelectedFront].getKod());
                                 String selectedColor = dataOrder[i][COLOR];
                                 int indexSelectedColor = getIndexColor(arrayColors, selectedColor);
-                                Nomenclature nomenclatureFront = nomenclature.getNomeclatureFront(
+                                Nomenclature nomenclatureFront = nomenclature.getNomenclatureFront(
                                         arrayFronts[indexSelectedFront].getName(),
                                         arrayColors[indexSelectedColor].getKod(),
                                         dataOrder[i][KOD_PRO100].substring(4));
@@ -269,20 +271,20 @@ public class GUI extends JFrame {
                                 dataOrder[i][NAME] = nomenclatureFront.getName();
                                 BigDecimal price = nomenclatureFront.getPrice();
                                 dataOrder[i][PRICE] = String.valueOf(price);
-                                BigDecimal sum = price.multiply(BigDecimal.valueOf(count));
+                                BigDecimal sum = price.multiply(count);
                                 dataOrder[i][SUM] = String.valueOf(sum);
                             }
                             if (dataOrder[i][KOD_PRO100].startsWith("KOR")){
                                 String selectedColor = dataOrder[i][COLOR];
                                 int indexSelectedColor = getIndexColor(arrayKorpusColors, selectedColor);
-                                Nomenclature nomenclatureKorpus = nomenclature.getNomeclatureKorpus(
+                                Nomenclature nomenclatureKorpus = nomenclature.getNomenclatureKorpus(
                                         arrayKorpusColors[indexSelectedColor].getKod(),
                                         dataOrder[i][KOD_PRO100].substring(4));
                                 dataOrder[i][ARTIKLE] = nomenclatureKorpus.getKod();
                                 dataOrder[i][NAME] = nomenclatureKorpus.getName();
                                 BigDecimal price = nomenclatureKorpus.getPrice();
                                 dataOrder[i][PRICE] = String.valueOf(price);
-                                BigDecimal sum = price.multiply(BigDecimal.valueOf(count));
+                                BigDecimal sum = price.multiply(count);
                                 dataOrder[i][SUM] = String.valueOf(sum);
                             }
                             if (dataOrder[i][KOD_PRO100].startsWith("K04")|| dataOrder[i][KOD_PRO100].startsWith("SK")){
@@ -291,7 +293,7 @@ public class GUI extends JFrame {
                                 dataOrder[i][NAME] = nomenclatureFullKod.getName();
                                 BigDecimal price = nomenclatureFullKod.getPrice();
                                 dataOrder[i][PRICE] = String.valueOf(price);
-                                BigDecimal sum = price.multiply(BigDecimal.valueOf(count));
+                                BigDecimal sum = price.multiply(count);
                                 dataOrder[i][SUM] = String.valueOf(sum);
                             }
                         }
@@ -330,19 +332,19 @@ public class GUI extends JFrame {
                 int selectedColumn = jTableOrder.getSelectedColumn();
                 String selectedCellData = String.valueOf(jTableOrder.getValueAt(selectedRow, selectedColumn));
 
-                int count = getCount(selectedRow);
+                BigDecimal count = getCount(selectedRow);
                 if (selectedColumn == KOD_PRO100) {
                     String kodPRO100 = selectedCellData;
                     Nomenclature nomenclature = new Nomenclature(manager);
                     if (kodPRO100.startsWith("FRN")) {
-                        Nomenclature nomenclatureFront = nomenclature.getNomeclatureFront(
+                        Nomenclature nomenclatureFront = nomenclature.getNomenclatureFront(
                                 arrayFronts[jComboBoxMainFront.getSelectedIndex()].getName(),
                                 arrayColorsMainFront[jComboBoxColorsMainFront.getSelectedIndex()].getKod(),
                                 kodPRO100.substring(4));
                         insertNomenclature(nomenclatureFront);
                     }
                     if (kodPRO100.startsWith("KOR")) {
-                        Nomenclature nomenclatureKorpus = nomenclature.getNomeclatureKorpus(
+                        Nomenclature nomenclatureKorpus = nomenclature.getNomenclatureKorpus(
                                 arrayKorpusColors[jComboBoxColorsMainKorpus.getSelectedIndex()].getKod(),
                                 kodPRO100.substring(4));
                         insertNomenclature(nomenclatureKorpus);
@@ -352,7 +354,7 @@ public class GUI extends JFrame {
                         insertNomenclature(nomenclatureFullKod);                    }
                 }else if (selectedColumn == COUNT){
                     BigDecimal price = BigDecimal.valueOf(Double.valueOf(String.valueOf(jTableOrder.getValueAt(selectedRow,PRICE))));
-                    BigDecimal sum = price.multiply(BigDecimal.valueOf(count));
+                    BigDecimal sum = price.multiply(count);
                     jTableOrder.setValueAt(String.valueOf(sum), selectedRow, SUM);
                     sum = getTotalSum();
                     jTableOrder.setValueAt(String.valueOf(sum), jTableOrder.getRowCount()-1, SUM);
@@ -542,22 +544,22 @@ public class GUI extends JFrame {
 
     private void insertNomenclature(Nomenclature nomenclature) {
         int selectedRow = jTableOrder.getSelectedRow();
-        int count = getCount(selectedRow);
+        BigDecimal count = getCount(selectedRow);
         jTableOrder.setValueAt(nomenclature.getKod(), selectedRow, ARTIKLE);
         jTableOrder.setValueAt(nomenclature.getName(), selectedRow, NAME);
         jTableOrder.setValueAt(String.valueOf(nomenclature.getPrice()), selectedRow, PRICE);
-        BigDecimal sum = nomenclature.getPrice().multiply(BigDecimal.valueOf(count));
+        BigDecimal sum = nomenclature.getPrice().multiply(count);
         jTableOrder.setValueAt(String.valueOf(sum), selectedRow, SUM);
         sum = getTotalSum();
         jTableOrder.setValueAt(String.valueOf(sum), jTableOrder.getRowCount()-1, SUM);
     }
 
-    private int getCount(int selectedRow) {
+    private BigDecimal getCount(int selectedRow) {
         if (String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT)).equals("")){
             jTableOrder.setValueAt("1", selectedRow, COUNT);
-            return 1;
+            return BigDecimal.valueOf(1);
         }else {
-            return Integer.parseInt(String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT)));
+            return BigDecimal.valueOf(Double.valueOf(String.valueOf(jTableOrder.getValueAt(selectedRow,COUNT))));
         }
     }
 
@@ -565,11 +567,9 @@ public class GUI extends JFrame {
     private String[][] getData(DataSet[] clipboard, Front[] arrayFronts, Color[] arrayColorsMainFront, Color[] arrayColorsAdditionFront, Color[] arrayKorpusColors) {
         String[][] data = new String [clipboard.length+1][columnNames.length];
 
-
         BigDecimal totalSum = BigDecimal.ZERO;
         BigDecimal sum;
         jProgressBar.setMaximum(clipboard.length-1);
-
 
         for (int i = 0; i < clipboard.length; i++) {
             jProgressBar.setValue(i);
@@ -580,13 +580,13 @@ public class GUI extends JFrame {
             data[i][COUNT] = String.valueOf(clipboard[i].getCount());
             Nomenclature nomenclature = new Nomenclature(manager);
             if (clipboard[i].getName().startsWith("FRN")){
-                Nomenclature nomenclatureFront = nomenclature.getNomeclatureFront(
+                Nomenclature nomenclatureFront = nomenclature.getNomenclatureFront(
                         arrayFronts[jComboBoxMainFront.getSelectedIndex()].getName(),
                         arrayColorsMainFront[jComboBoxColorsMainFront.getSelectedIndex()].getKod(),
                         clipboard[i].getName().substring(4));
                 if (nomenclatureFront.getName().equals("do not definathion") &&
                         jComboBoxAdditionFront.getSelectedIndex() != arrayFronts.length){
-                    nomenclatureFront = nomenclature.getNomeclatureFront(
+                    nomenclatureFront = nomenclature.getNomenclatureFront(
                             arrayFronts[jComboBoxAdditionFront.getSelectedIndex()].getName(),
                             arrayColorsAdditionFront[jComboBoxColorsAdditionFront.getSelectedIndex()].getKod(),
                             clipboard[i].getName().substring(4));
@@ -603,12 +603,12 @@ public class GUI extends JFrame {
                 data[i][SUM] = String.valueOf(sum);
             }
             if (clipboard[i].getName().startsWith("KOR")){
-                Nomenclature nomenclatureKorpus = nomenclature.getNomeclatureKorpus(
+                Nomenclature nomenclatureKorpus = nomenclature.getNomenclatureKorpus(
                         arrayKorpusColors[jComboBoxColorsMainKorpus.getSelectedIndex()].getKod(),
                         clipboard[i].getName().substring(4));
                 if (nomenclatureKorpus.getName().equals("do not definathion") &&
                         jComboBoxColorsAdditionKorpus.getSelectedIndex() != arrayKorpusColors.length){
-                    nomenclatureKorpus = nomenclature.getNomeclatureKorpus(
+                    nomenclatureKorpus = nomenclature.getNomenclatureKorpus(
                             arrayKorpusColors[jComboBoxColorsAdditionKorpus.getSelectedIndex()].getKod(),
                             clipboard[i].getName().substring(4));
                     data[i][COLOR] = arrayKorpusColors[jComboBoxColorsAdditionKorpus.getSelectedIndex()].getName();
@@ -635,7 +635,6 @@ public class GUI extends JFrame {
                 data[i][SUM] = String.valueOf(sum);
             }
             totalSum = totalSum.add(sum);
-
         }
         data[clipboard.length][PRICE] = "Всього:";
         data[clipboard.length][SUM] = String.valueOf(totalSum);
@@ -654,7 +653,6 @@ public class GUI extends JFrame {
         return sum;
     }
 
-
     public BigDecimal getTotalSum() {
         BigDecimal sum = BigDecimal.ZERO;
         for (int row = 0; row < jTableOrder.getRowCount()-1 ; row++) {
@@ -664,14 +662,5 @@ public class GUI extends JFrame {
             }
         }
         return sum;
-    }
-
-
-    private class EnterAction extends AbstractAction {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-        }
     }
 }

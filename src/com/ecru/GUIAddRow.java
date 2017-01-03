@@ -26,6 +26,7 @@ public class GUIAddRow extends JFrame{
     private final JLabel statusLabel;
     private final JTable jTableNomeklature;
     private final JScrollPane jScrollPanel;
+    private Color[] arrayColorsFront;
     private String[] typesNomenсlature = {"", "Корпус", "Фасад", "Стільниця"};
     private JComboBox jComboBoxColorsKorpus;
     private JComboBox jComboBoxFront;
@@ -58,7 +59,7 @@ public class GUIAddRow extends JFrame{
         jComboBoxFront.setSelectedIndex(MAXIMUM_USE_FRONT);
         jComboBoxFront.setVisible(false);
         add(jComboBoxFront);
-        Color[] arrayColorsFront = color.arrayColors(arrayFronts[jComboBoxFront.getSelectedIndex()].getKod());
+        arrayColorsFront = color.arrayColors(arrayFronts[jComboBoxFront.getSelectedIndex()].getKod());
         jComboBoxColorsFront = new JComboBox(color.getColorsNames(arrayColorsFront));
         jComboBoxColorsFront.setSelectedIndex(MAXIMUM_USE_COLOR_FRONT);
         jComboBoxColorsFront.setVisible(false);
@@ -78,6 +79,50 @@ public class GUIAddRow extends JFrame{
         jScrollPanel = new JScrollPane(jTableNomeklature);
         add(jScrollPanel);
 
+
+        jComboBoxColorsFront.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Nomenclature nomenclature = new Nomenclature(manager);
+                    if (jComboBoxColorsFront.getItemCount() == 0) {
+                        dataSet =  nomenclature.getNomenclatureFrontByType(
+                                arrayFronts[jComboBoxFront.getSelectedIndex()].getKod());
+                    }else{
+                        dataSet =  nomenclature.getNomenclatureFrontByTypeAndColor(
+                                arrayFronts[jComboBoxFront.getSelectedIndex()].getKod(),
+                                arrayColorsFront[jComboBoxColorsFront.getSelectedIndex()].getKod());
+                    }
+                    data = new String[dataSet.size()][columnNamesTableNomenclature.length];
+                    int indexData = 0;
+                    for (Nomenclature d: dataSet){
+                        data[indexData][0] = d.getKod();
+                        data[indexData][1] = d.getName();
+                        data[indexData][2] = String.valueOf(d.getPrice());
+                        indexData++;
+                    }
+                    DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
+                        @Override
+                        public boolean isCellEditable(int row, int column) {
+                            //all cells false
+                            return false;
+                        }
+                    };
+                    jTableNomeklature.setModel(model);
+                }
+            }
+        );
+
+        jComboBoxFront.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                jComboBoxColorsFront.removeAllItems();
+                arrayColorsFront = color.arrayColors(arrayFronts[jComboBoxFront.getSelectedIndex()].getKod());
+                String[] colorsNames = color.getColorsNames(arrayColorsFront);
+                for (int i = 0; i < colorsNames.length; i++) {
+                    jComboBoxColorsFront.addItem(colorsNames[i]);
+                }
+            }
+        });
 
         jTableNomeklature.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent me) {
