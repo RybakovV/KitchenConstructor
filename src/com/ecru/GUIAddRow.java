@@ -128,7 +128,6 @@ public class GUIAddRow extends JFrame{
                 int row = table.rowAtPoint(p);
                 if (me.getClickCount() == 2) {
                     statusLabel.setText("clicked " + row + " row with nomenclature (" + data[row][0] +") " + data[row][1]);
-                    //data = (String[][]) dataSet.toArray();
                     insertNomenclature(data[row], jTableOrder);
                 }
             }
@@ -140,7 +139,6 @@ public class GUIAddRow extends JFrame{
                 Nomenclature nomenclature = new Nomenclature(manager);
                 dataSet =  nomenclature.getNomenclatureKorpusByColor(arrayKorpusColors[jComboBoxColorsKorpus.getSelectedIndex()].getKod());
                 data = new String[dataSet.size()][columnNamesTableNomenclature.length];
-                //data = (String[][]) dataSet.toArray();
                 int indexData = 0;
                 for (Nomenclature d: dataSet){
                     data[indexData][0] = d.getKod();

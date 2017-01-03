@@ -54,8 +54,7 @@ public class Nomenclature implements Comparable<Nomenclature>{
     }
 
     public Set<Nomenclature> getNomenclatureKorpusByColor(String colorKod){
-        //List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
-        Set<Nomenclature> result = new TreeSet<>(); //TODO TreeSet
+        Set<Nomenclature> result = new TreeSet<>();
         Nomenclature nomenclature;
         colorKod = "K04-KORPUS-"+colorKod;
         try (Statement statement = connection.createStatement();
@@ -75,8 +74,7 @@ public class Nomenclature implements Comparable<Nomenclature>{
     }
 
     public Set<Nomenclature> getNomenclatureFrontByType(String frontKod) {
-        //List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
-        Set<Nomenclature> result = new TreeSet<>(); //TODO TreeSet
+        Set<Nomenclature> result = new TreeSet<>();
         Nomenclature nomenclature;
         frontKod = "K04-"+ frontKod + "-";
         try (Statement statement = connection.createStatement();
@@ -98,8 +96,7 @@ public class Nomenclature implements Comparable<Nomenclature>{
 
 
     public Set<Nomenclature> getNomenclatureFrontByTypeAndColor(String frontKod, String colorKod) {
-        //List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
-        Set<Nomenclature> result = new TreeSet<>(); //TODO TreeSet
+        Set<Nomenclature> result = new TreeSet<>();
         Nomenclature nomenclature;
         colorKod = "K04-"+ frontKod + "-"+colorKod;
         try (Statement statement = connection.createStatement();
