@@ -53,8 +53,8 @@ public class Nomenclature {
         this.price = price;
     }
 
-    public Set<Nomenclature> getNomenclatureKorpus(String colorKod){
-        Set<Nomenclature> result = new HashSet<>(); //TODO TreeSet
+    public List<Nomenclature> getNomenclatureKorpusByColor(String colorKod){
+        List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
         Nomenclature nomenclature;
         colorKod = "K04-KORPUS-"+colorKod;
         try (Statement statement = connection.createStatement();
