@@ -10,9 +10,9 @@ import java.util.*;
 /**
  * Created by Vitaliy Ryvakov on 10.10.2016.
  */
-public class Nomenclature {
+public class Nomenclature implements Comparable<Nomenclature>{
     private Connection connection;
-    private  String kod;
+    private String kod;
     private String name;
     private BigDecimal price;
     private DataBaseManager manager;
@@ -53,8 +53,9 @@ public class Nomenclature {
         this.price = price;
     }
 
-    public List<Nomenclature> getNomenclatureKorpusByColor(String colorKod){
-        List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
+    public Set<Nomenclature> getNomenclatureKorpusByColor(String colorKod){
+        //List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
+        Set<Nomenclature> result = new TreeSet<>(); //TODO TreeSet
         Nomenclature nomenclature;
         colorKod = "K04-KORPUS-"+colorKod;
         try (Statement statement = connection.createStatement();
@@ -73,8 +74,9 @@ public class Nomenclature {
         return result;
     }
 
-    public List<Nomenclature> getNomenclatureFrontByType(String frontKod) {
-        List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
+    public Set<Nomenclature> getNomenclatureFrontByType(String frontKod) {
+        //List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
+        Set<Nomenclature> result = new TreeSet<>(); //TODO TreeSet
         Nomenclature nomenclature;
         frontKod = "K04-"+ frontKod + "-";
         try (Statement statement = connection.createStatement();
@@ -95,8 +97,9 @@ public class Nomenclature {
     }
 
 
-    public List<Nomenclature> getNomenclatureFrontByTypeAndColor(String frontKod, String colorKod) {
-        List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
+    public Set<Nomenclature> getNomenclatureFrontByTypeAndColor(String frontKod, String colorKod) {
+        //List<Nomenclature> result = new LinkedList<>(); //TODO TreeSet
+        Set<Nomenclature> result = new TreeSet<>(); //TODO TreeSet
         Nomenclature nomenclature;
         colorKod = "K04-"+ frontKod + "-"+colorKod;
         try (Statement statement = connection.createStatement();
@@ -229,4 +232,8 @@ public class Nomenclature {
         return nomenclature;
     }
 
+    @Override
+    public int compareTo(Nomenclature nomenclature) {
+        return this.kod.compareTo(nomenclature.kod); // if (this.kod > nomenclature.kod) {
+    }
 }

@@ -5,11 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.Set;
 
 import static com.ecru.GUI.*;
 import static com.ecru.JTableUtil.*;
@@ -35,7 +32,7 @@ public class GUIAddRow extends JFrame{
     private String[] columnNamesTableNomenclature = {"Код", "Назва", "Ціна"};
     String[][] data =  {{"K04-BLAT-BUS-POW_600_GR_38-BLA01","Стільниця погонна BUS  від 600 товщина 38", "0"}};
 
-    private List<Nomenclature> dataSet;
+    private Set<Nomenclature> dataSet;
 
     public GUIAddRow(JTable jTableOrder){
         super("Додати номенклатуру");
@@ -131,7 +128,8 @@ public class GUIAddRow extends JFrame{
                 int row = table.rowAtPoint(p);
                 if (me.getClickCount() == 2) {
                     statusLabel.setText("clicked " + row + " row with nomenclature (" + data[row][0] +") " + data[row][1]);
-                    insertNomenclature(dataSet.get(row), jTableOrder);
+                    //data = (String[][]) dataSet.toArray();
+                    insertNomenclature(data[row], jTableOrder);
                 }
             }
         });
@@ -141,7 +139,8 @@ public class GUIAddRow extends JFrame{
             public void itemStateChanged(ItemEvent e) {
                 Nomenclature nomenclature = new Nomenclature(manager);
                 dataSet =  nomenclature.getNomenclatureKorpusByColor(arrayKorpusColors[jComboBoxColorsKorpus.getSelectedIndex()].getKod());
-                data = new String[dataSet.size()][3];
+                data = new String[dataSet.size()][columnNamesTableNomenclature.length];
+                //data = (String[][]) dataSet.toArray();
                 int indexData = 0;
                 for (Nomenclature d: dataSet){
                     data[indexData][0] = d.getKod();
@@ -149,6 +148,7 @@ public class GUIAddRow extends JFrame{
                     data[indexData][2] = String.valueOf(d.getPrice());
                     indexData++;
                 }
+
                 DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
                   @Override
                   public boolean isCellEditable(int row, int column) {
@@ -191,7 +191,8 @@ public class GUIAddRow extends JFrame{
         });
     }
 
-    private void insertNomenclature(Nomenclature nomenclature, JTable jTable) {
+    private void insertNomenclature(String[] row, JTable jTable) {
+
         int selectedRow = jTable.getSelectedRow();
         if (selectedRow ==  -1) {
             selectedRow = jTable.getRowCount()-2;
@@ -203,10 +204,14 @@ public class GUIAddRow extends JFrame{
         copyTableRow(jTable, selectedColumn, selectedRow);
         selectedRow++;
         int count = 1;
-        jTable.setValueAt(nomenclature.getKod(), selectedRow, ARTIKLE);
-        jTable.setValueAt(nomenclature.getName(), selectedRow, NAME);
-        jTable.setValueAt(String.valueOf(nomenclature.getPrice()), selectedRow, PRICE);
-        BigDecimal sum = nomenclature.getPrice().multiply(BigDecimal.valueOf(count));
+        //jTable.setValueAt(nomenclature.getKod(), selectedRow, ARTIKLE);
+        jTable.setValueAt(row[0], selectedRow, ARTIKLE);
+        //jTable.setValueAt(nomenclature.getName(), selectedRow, NAME);
+        jTable.setValueAt(row[1], selectedRow, NAME);
+        //jTable.setValueAt(String.valueOf(nomenclature.getPrice()), selectedRow, PRICE);
+        jTable.setValueAt(row[2], selectedRow, PRICE);
+        //BigDecimal sum = nomenclature.getPrice().multiply(BigDecimal.valueOf(count));
+        BigDecimal sum = BigDecimal.valueOf(Double.valueOf(String.valueOf(row[2]))).multiply(BigDecimal.valueOf(count));
         jTable.setValueAt(String.valueOf(sum), selectedRow, SUM);
         sum = getTotalSum(jTable);
         jTable.setValueAt(String.valueOf(sum), jTable.getRowCount()-1, GUI.SUM);
