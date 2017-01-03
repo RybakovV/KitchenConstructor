@@ -26,7 +26,7 @@ public class DownloadPrice {
         readFileAndWriteToDB("Senso 6.txt");
         readFRNFROMFileAndWriteToDB("FRN.txt");
 */
-        readColorsFROMFileAndWriteToDB("colors.txt", "colors");
+        readColorsFROMFileAndWriteToDB("colorsBlat.txt", "colors");
     }
 
     private static void readColorsFROMFileAndWriteToDB(String fileName, String tableName) {

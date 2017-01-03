@@ -18,9 +18,11 @@ import java.util.TimerTask;
  */
 public class GUI extends JFrame {
 
-    private static final int MAXIMUM_USE_FRONT = 3; //TODO Analitics
-    private static final int MAXIMUM_USE_COLOR_FRONT = 0; //TODO Analitics
+    static final int MAXIMUM_USE_FRONT = 3; //TODO Analitics
+    static final int MAXIMUM_USE_COLOR_FRONT = 0; //TODO Analitics
     private static final int MAXIMUM_USE_COLOR_KORPUS = 3;  //TODO Analitics
+
+    private JButton jButtonAddRow;
     private JLabel jLabel;
     private JProgressBar jProgressBar;
 
@@ -39,7 +41,8 @@ public class GUI extends JFrame {
     private JLabel jLabelColorsMainKorpus;
     private JLabel jLabelColorsAdditionKorpus;
     private JComboBox jComboBoxColorsAdditionKorpus;
-    private JButton jButtonAddRows;
+    private JButton jButtonCopyRow;
+    private JButton jButtonRemoveRow;
     private Front[] arrayFronts;
     private JComboBox jComboBoxFrontInTable;
     private JComboBox jComboBoxColorsFrontInTable;
@@ -54,9 +57,9 @@ public class GUI extends JFrame {
     private JComboBox jComboBoxColorsMainFront;
 
 
-    private static DataBaseManager manager;
+    static DataBaseManager manager;
     private static Front front;
-    private static Color color;
+    static Color color;
 
     private JTable jTableOrder;
     private JScrollPane jScrollPane;
@@ -89,7 +92,7 @@ public class GUI extends JFrame {
     private ProgressDialog progress;
 
     public GUI() {
-        super("GUITable");
+        super("Конструктор кухонь");
         setLayout(new FlowLayout());
 
         manager = new DataBaseManager();
@@ -171,22 +174,34 @@ public class GUI extends JFrame {
         jButtonGetFromClipboard = new JButton(new ImageIcon("editpaste_32.png"));
         jButtonGetFromClipboard.setToolTipText("Вставити з буферу обміну");
         jPanelButtons.add(jButtonGetFromClipboard);
-        jButtonAddRows = new JButton(new ImageIcon("add_32.png"));
-        jButtonAddRows.setToolTipText("Добавити рядок");
-        jButtonRecalculate = new JButton("Перерахувати");
+        jButtonCopyRow = new JButton(new ImageIcon("add_32.png"));
+        jButtonCopyRow.setToolTipText("Копіювати рядок");
+
+        jButtonRemoveRow = new JButton(new ImageIcon("remove_32.png"));
+        jButtonRemoveRow.setToolTipText("Видалити рядок");
+
+        jButtonAddRow = new JButton(new ImageIcon("gtk-add_4285.png"));
+        jButtonAddRow.setToolTipText("Додати номенклатуру...");
+
+        jButtonRecalculate = new JButton(new ImageIcon("reload_8215.png"));
+        jButtonRecalculate.setToolTipText("Перерахувати");
         jPanelButtons.add(jButtonRecalculate);
-        jPanelButtons.add(jButtonAddRows);
+        jPanelButtons.add(jButtonCopyRow);
+        jPanelButtons.add(jButtonRemoveRow);
+        jPanelButtons.add(jButtonAddRow);
+
         jProgressBar = new JProgressBar();
         jProgressBar.setStringPainted(true);
         jProgressBar.setMaximum(40);
         jProgressBar.setValue(0);
+
         jPanelButtons.add(jProgressBar);
         jLabel = new JLabel();
         jPanelButtons.add(jLabel);
         add(jPanelButtons);
 
         jTableOrder = new JTable(data, columnNames);
-        jTableOrder.setPreferredScrollableViewportSize(new Dimension(967, 600));
+        jTableOrder.setPreferredScrollableViewportSize(new Dimension(967, 580));
         jTableOrder.setFillsViewportHeight(true);
         setColumnWidth();
         jComboBoxFrontInTable = new JComboBox(front.getFrontsNames(arrayFronts));
@@ -203,6 +218,16 @@ public class GUI extends JFrame {
         jScrollPane = new JScrollPane(jTableOrder);
         add(jScrollPane);
         jTableOrder.setCellSelectionEnabled(true);//so ass select only one cell
+
+        jButtonAddRow.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GUIAddRow addRow = new GUIAddRow();
+                addRow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                addRow.setSize(1000,500);
+                addRow.setVisible(true);
+            }
+        });
 
         jButtonRecalculate.addActionListener(new ActionListener() {
             @Override
@@ -338,8 +363,38 @@ public class GUI extends JFrame {
             }
         });
 
+        jButtonRemoveRow.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-        jButtonAddRows.addActionListener(new ActionListener() {
+                int selectedRow = jTableOrder.getSelectedRow();
+                if ( selectedRow >= 0 ){
+                    data = getDataFromTable();
+                    String[][] newData = new String[data.length-1][columnNames.length];
+                    for (int i = 0; i < selectedRow; i++) {
+                        newData[i] = data[i];
+                    }
+                    for (int i = selectedRow+1; i < newData.length; i++) {
+                        newData[i-1] = data[i];
+                        newData[i-1][NUMBER_ROW] = String.valueOf(i);
+                    }
+
+                    data = newData;
+                    data[data.length-1][SUM] = String.valueOf(getTotalSum(data));
+
+                    DefaultTableModel model = new DefaultTableModel(data, columnNames);
+                    jTableOrder.setModel(model);
+                    setColumnWidth();
+                    jComboBoxFrontInTable.removeAll();
+                    jComboBoxFrontInTable.addItem(front.getFrontsNames(arrayFronts));
+                    TableColumn typeColumn = jTableOrder.getColumnModel().getColumn(TYPE);
+                    typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxFrontInTable));
+                }
+            }
+        });
+
+
+        jButtonCopyRow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = jTableOrder.getSelectedRow();

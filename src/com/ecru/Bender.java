@@ -12,7 +12,7 @@ public class Bender {
 
         GUI window = new GUI();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(1000,1000);
+        window.setSize(1000,850);
         window.setVisible(true);
 
     }

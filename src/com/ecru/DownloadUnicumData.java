@@ -1,11 +1,13 @@
 package com.ecru;
 
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import java.util.Arrays;
+import java.util.*;
 
 public class DownloadUnicumData {
 
@@ -15,9 +17,25 @@ public class DownloadUnicumData {
     public static void main(String[] args) {
         System.out.println("Updating price list");
         connectToDataBase("kitchenkonstructor", "root", "root");
-        System.out.println(Arrays.toString(unicumData()));
+        //System.out.println(Arrays.toString(unicumData()));
+        System.out.println(tableTop().keySet());
+
     }
 
+    private static Map<String,String> tableTop(){
+        Map result = new HashMap();
+
+        try (Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr` FROM `kitchenkonstructor`.`senso_price` " +
+                    "WHERE `kod` LIKE '%-BLAT-%'")) {
+            while (resultSet.next()){
+                result.put(resultSet.getString("kod").split("-")[2],resultSet.getString("name_ukr"));
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
     private static String[] unicumData() {
         String unicumData[] = new String[400];
@@ -44,8 +62,7 @@ public class DownloadUnicumData {
                 }
                 if (i == unicumIndex ){
                     unicumData[unicumIndex] = kodFRN;
-
-                    System.out.println(unicumIndex + "\t" + kodFRN + "\t"  + resultSet.getString(3) );
+                    System.out.println(unicumIndex + "\t" + kodFRN + "\t"  + resultSet.getString(3));
                     unicumIndex++;
                 }
             }
@@ -58,6 +75,8 @@ public class DownloadUnicumData {
 
         return Arrays.copyOfRange(unicumData,0,unicumIndex-1);
     }
+
+
 
     public static void connectToDataBase(String database, String user, String password) {
         try {

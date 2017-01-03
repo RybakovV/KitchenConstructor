@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by Vitaliy Ryvakov on 10.10.2016.
@@ -51,6 +51,28 @@ public class Nomenclature {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Set<Nomenclature> getNomenclatureKorpus(String colorKod){
+        Set<Nomenclature> result = new HashSet<>(); //TODO TreeSet
+        Nomenclature nomenclature;
+        colorKod = "K04-KORPUS-"+colorKod;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price` FROM " +
+                     "`kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%" + colorKod + "%'")){
+            while (resultSet.next()){
+                String kod = resultSet.getString("kod");
+                String name_ukr = resultSet.getString("name_ukr");
+                BigDecimal price = BigDecimal.valueOf(Double.valueOf(resultSet.getString("price")));
+                nomenclature = new Nomenclature(kod, name_ukr, price);
+                result.add(nomenclature);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return result;
     }
 
     public Nomenclature getNomeclatureKorpus(String colorKod, String sizeType) {

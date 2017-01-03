@@ -14,13 +14,15 @@ public class DownloadDataColors {
     public static void main(String[] args) {
         System.out.println("Updating price list");
         connectToDataBase("kitchenkonstructor", "root", "root");
-        //unicumColorDataToConsole();
-        unikumColorDataToDB("colors.txt", "colors");
+        unicumColorDataToConsole();
+        insertDataFromFileToDB("colorsBlat.txt", "colors");
     }
 
-    private static void unikumColorDataToDB(String fileName, String tableName) {
+    private static void insertDataFromFileToDB(String fileName, String tableName) {
 
     }
+
+
 
 
     private static void unicumColorDataToConsole() {
@@ -35,11 +37,10 @@ public class DownloadDataColors {
             statementColor = connection.createStatement();
             resultSetFRN = statementFRN.executeQuery("SELECT * FROM `frn`");
             ResultSet resultSetColor = null;
-            String kodFRN;
-
+            String kod;
             while (resultSetFRN.next()){
-                kodFRN = resultSetFRN.getString(2);
-                resultSetColor = statementColor.executeQuery("SELECT  `id`, `kod`, `name_ukr` FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%"+kodFRN+"%'");
+                kod = resultSetFRN.getString(2);
+                resultSetColor = statementColor.executeQuery("SELECT  `id`, `kod`, `name_ukr` FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%"+kod+"%'");
                 resultSetColor.next();
                 String unicumColor[] = new String[400];
                 int unicumIndex = 0;
@@ -57,7 +58,7 @@ public class DownloadDataColors {
                     }
                     if (i == unicumIndex ){
                         unicumColor[unicumIndex] = color;
-                        System.out.println(kodFRN + "\t" + color + "\t"  + resultSetColor.getString(3) );
+                        System.out.println(kod + "\t" + color + "\t"  + resultSetColor.getString(3) );
                         unicumIndex++;
                     }
                 }
