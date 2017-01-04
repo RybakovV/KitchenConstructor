@@ -4,7 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class DownloadDataColors {
 
@@ -14,8 +19,9 @@ public class DownloadDataColors {
     public static void main(String[] args) {
         System.out.println("Updating price list");
         connectToDataBase("kitchenkonstructor", "root", "root");
-        unicumColorDataToConsole();
-        insertDataFromFileToDB("colorsBlat.txt", "colors");
+        //unicumColorDataToConsole();
+        //insertDataFromFileToDB("colorsBlat.txt", "colors");
+        System.out.println(dataToConsole("-BLAT_LIS").toString());
     }
 
     private static void insertDataFromFileToDB(String fileName, String tableName) {
@@ -23,7 +29,24 @@ public class DownloadDataColors {
     }
 
 
+    private static Map<String,String> dataToConsole(String typeKod){
+        Map<String,String> result =new TreeMap<>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price` FROM " +
+                     "`kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%" + typeKod + "%'")){
+            while (resultSet.next()){
+                String kod = resultSet.getString("kod").split("-")[2] +"\t";
+                String name_ukr = resultSet.getString("name_ukr") +"\n";
+                //String price = resultSet.getString("price") +"\n";
+                //result.add(kod + name_ukr + price);
+                result.put(kod, name_ukr);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
 
+    }
 
     private static void unicumColorDataToConsole() {
 

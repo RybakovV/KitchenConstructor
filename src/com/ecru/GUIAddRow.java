@@ -6,7 +6,9 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static com.ecru.GUI.*;
 import static com.ecru.JTableUtil.*;
@@ -19,13 +21,16 @@ public class GUIAddRow extends JFrame{
 
     private final JLabel jLabelType;
     private final JComboBox jComboBoxType;
-    private final JComboBox jComboBoxColorsTableTop;
+    private final JComboBox jComboBoxColorsBlat;
+    private JComboBox jComboBoxColorsBlatLis;
+
     private final JLabel statusLabel;
     private final JTable jTableNomeklature;
     private final JScrollPane jScrollPanel;
     private Color[] arrayColorsFront;
-    private String[] typesNomenсlature = {"", "Корпус", "Фасад", "Стільниця"};
+    private String[] typesNomenсlature = {"", "Корпус", "Фасад", "Стільниця", "Плінтус"};
     private JComboBox jComboBoxColorsKorpus;
+
     private JComboBox jComboBoxFront;
     private JComboBox jComboBoxColorsFront;
 
@@ -62,10 +67,15 @@ public class GUIAddRow extends JFrame{
         jComboBoxColorsFront.setVisible(false);
         add(jComboBoxColorsFront);
 
-        Color[] arrayColorsTableTop = color.arrayColors("BLAT");
-        jComboBoxColorsTableTop = new JComboBox(color.getColorsNames(arrayColorsTableTop));
-        jComboBoxColorsTableTop.setVisible(false);
-        add(jComboBoxColorsTableTop);
+        Color[] arrayColorsBlat = color.arrayColors("BLAT");
+        jComboBoxColorsBlat = new JComboBox(color.getColorsNames(arrayColorsBlat));
+        jComboBoxColorsBlat.setVisible(false);
+        add(jComboBoxColorsBlat);
+
+        Color[] arrayColorsBlatLis = color.arrayColors("BLAT_LIS");
+        jComboBoxColorsBlatLis = new JComboBox(color.getColorsNames(arrayColorsBlatLis));
+        jComboBoxColorsBlatLis.setVisible(false);
+        add(jComboBoxColorsBlatLis);
 
         statusLabel = new JLabel("status");
         add(statusLabel);
@@ -76,6 +86,50 @@ public class GUIAddRow extends JFrame{
         jScrollPanel = new JScrollPane(jTableNomeklature);
         add(jScrollPanel);
 
+        jComboBoxColorsBlatLis.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Nomenclature nomenclature = new Nomenclature(manager);
+                Set<Nomenclature> dataSetColorsLis =  nomenclature.getNomenclature("-BLAT_LIS-",
+                        arrayColorsBlatLis[jComboBoxColorsBlatLis.getSelectedIndex()].getKod());
+                Set<Nomenclature> dataSetColorsD = nomenclature.getNomenclature("-BLAT_LIS/D-",
+                        arrayColorsBlatLis[jComboBoxColorsBlatLis.getSelectedIndex()].getKod());
+                dataSet = new TreeSet<Nomenclature>();
+
+                dataSet.addAll(dataSetColorsLis);
+                dataSet.addAll(dataSetColorsD);
+                data = getArrayFromSet(dataSet);
+
+                DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        //all cells false
+                        return false;
+                    }
+                };
+                jTableNomeklature.setModel(model);
+
+            }
+        });
+
+        jComboBoxColorsBlat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Nomenclature nomenclature = new Nomenclature(manager);
+                dataSet =  nomenclature.getNomenclatureBlatByColor(arrayColorsBlat[jComboBoxColorsBlat.getSelectedIndex()].getKod());
+                data = getArrayFromSet(dataSet);
+
+                DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        //all cells false
+                        return false;
+                    }
+                };
+                jTableNomeklature.setModel(model);
+
+            }
+        });
 
         jComboBoxColorsFront.addActionListener(new ActionListener() {
                 @Override
@@ -89,14 +143,7 @@ public class GUIAddRow extends JFrame{
                                 arrayFronts[jComboBoxFront.getSelectedIndex()].getKod(),
                                 arrayColorsFront[jComboBoxColorsFront.getSelectedIndex()].getKod());
                     }
-                    data = new String[dataSet.size()][columnNamesTableNomenclature.length];
-                    int indexData = 0;
-                    for (Nomenclature d: dataSet){
-                        data[indexData][0] = d.getKod();
-                        data[indexData][1] = d.getName();
-                        data[indexData][2] = String.valueOf(d.getPrice());
-                        indexData++;
-                    }
+                    data = getArrayFromSet(dataSet);
                     DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
                         @Override
                         public boolean isCellEditable(int row, int column) {
@@ -138,15 +185,7 @@ public class GUIAddRow extends JFrame{
             public void itemStateChanged(ItemEvent e) {
                 Nomenclature nomenclature = new Nomenclature(manager);
                 dataSet =  nomenclature.getNomenclatureKorpusByColor(arrayKorpusColors[jComboBoxColorsKorpus.getSelectedIndex()].getKod());
-                data = new String[dataSet.size()][columnNamesTableNomenclature.length];
-                int indexData = 0;
-                for (Nomenclature d: dataSet){
-                    data[indexData][0] = d.getKod();
-                    data[indexData][1] = d.getName();
-                    data[indexData][2] = String.valueOf(d.getPrice());
-                    indexData++;
-                }
-
+                data = getArrayFromSet(dataSet);
                 DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
                   @Override
                   public boolean isCellEditable(int row, int column) {
@@ -166,12 +205,16 @@ public class GUIAddRow extends JFrame{
                         jComboBoxColorsKorpus.setVisible(true);
                         jComboBoxFront.setVisible(false);
                         jComboBoxColorsFront.setVisible(false);
+                        jComboBoxColorsBlat.setVisible(false);
+                        jComboBoxColorsBlatLis.setVisible(false);
                         break;
                     }
                     case 2: {
                         jComboBoxFront.setVisible(true);
                         jComboBoxColorsFront.setVisible(true);
                         jComboBoxColorsKorpus.setVisible(false);
+                        jComboBoxColorsBlat.setVisible(false);
+                        jComboBoxColorsBlatLis.setVisible(false);
 
                         break;
                     }
@@ -179,14 +222,33 @@ public class GUIAddRow extends JFrame{
                         jComboBoxFront.setVisible(false);
                         jComboBoxColorsFront.setVisible(false);
                         jComboBoxColorsKorpus.setVisible(false);
-                        jComboBoxColorsTableTop.setVisible(true);
-
+                        jComboBoxColorsBlat.setVisible(true);
+                        jComboBoxColorsBlatLis.setVisible(false);
                         break;
+                    }
+                    case 4:{
+                        jComboBoxFront.setVisible(false);
+                        jComboBoxColorsFront.setVisible(false);
+                        jComboBoxColorsKorpus.setVisible(false);
+                        jComboBoxColorsBlat.setVisible(false);
+                        jComboBoxColorsBlatLis.setVisible(true);
                     }
 
                 }
             }
         });
+    }
+
+    private String[][] getArrayFromSet(Set<Nomenclature> dataSet) {
+        String[][] data = new String[dataSet.size()][columnNamesTableNomenclature.length];
+        int indexData = 0;
+        for (Nomenclature d: dataSet){
+            data[indexData][0] = d.getKod();
+            data[indexData][1] = d.getName();
+            data[indexData][2] = String.valueOf(d.getPrice());
+            indexData++;
+        }
+        return data;
     }
 
     private void insertNomenclature(String[] row, JTable jTable) {
@@ -202,13 +264,9 @@ public class GUIAddRow extends JFrame{
         copyTableRow(jTable, selectedColumn, selectedRow);
         selectedRow++;
         int count = 1;
-        //jTable.setValueAt(nomenclature.getKod(), selectedRow, ARTIKLE);
         jTable.setValueAt(row[0], selectedRow, ARTIKLE);
-        //jTable.setValueAt(nomenclature.getName(), selectedRow, NAME);
         jTable.setValueAt(row[1], selectedRow, NAME);
-        //jTable.setValueAt(String.valueOf(nomenclature.getPrice()), selectedRow, PRICE);
         jTable.setValueAt(row[2], selectedRow, PRICE);
-        //BigDecimal sum = nomenclature.getPrice().multiply(BigDecimal.valueOf(count));
         BigDecimal sum = BigDecimal.valueOf(Double.valueOf(String.valueOf(row[2]))).multiply(BigDecimal.valueOf(count));
         jTable.setValueAt(String.valueOf(sum), selectedRow, SUM);
         sum = getTotalSum(jTable);
@@ -250,10 +308,7 @@ public class GUIAddRow extends JFrame{
         jTable.addRowSelectionInterval(selectedRow+1,selectedRow+1);
 
         jTable.addColumnSelectionInterval(selectedColumn,selectedColumn);
-        //jComboBoxFrontInTable.removeAll();
-        //jComboBoxFrontInTable.addItem(front.getFrontsNames(arrayFronts));
         TableColumn typeColumn = jTable.getColumnModel().getColumn(TYPE);
-        //typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxFrontInTable));
 
     }
 

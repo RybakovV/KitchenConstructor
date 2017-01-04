@@ -233,4 +233,45 @@ public class Nomenclature implements Comparable<Nomenclature>{
     public int compareTo(Nomenclature nomenclature) {
         return this.kod.compareTo(nomenclature.kod); // if (this.kod > nomenclature.kod) {
     }
+
+    public Set<Nomenclature> getNomenclatureBlatByColor(String colorKod) {
+        Set<Nomenclature> result = new TreeSet<>();
+        Nomenclature nomenclature;
+        colorKod = "K04-BLAT-"+colorKod;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price` FROM " +
+                     "`kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%" + colorKod + "%'")){
+            while (resultSet.next()){
+                String kod = resultSet.getString("kod");
+                String name_ukr = resultSet.getString("name_ukr");
+                BigDecimal price = BigDecimal.valueOf(Double.valueOf(resultSet.getString("price")));
+                nomenclature = new Nomenclature(kod, name_ukr, price);
+                result.add(nomenclature);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Set<Nomenclature> getNomenclature(String typeKod, String colorKod) {
+        Set<Nomenclature> result = new TreeSet<>();
+        Nomenclature nomenclature;
+        typeKod += colorKod;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price` FROM " +
+                     "`kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%" + typeKod + "%'")){
+            while (resultSet.next()){
+                String kod = resultSet.getString("kod");
+                String name_ukr = resultSet.getString("name_ukr");
+                BigDecimal price = BigDecimal.valueOf(Double.valueOf(resultSet.getString("price")));
+                nomenclature = new Nomenclature(kod, name_ukr, price);
+                result.add(nomenclature);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 }

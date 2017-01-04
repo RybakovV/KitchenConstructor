@@ -17,8 +17,8 @@ public class DownloadUnicumData {
     public static void main(String[] args) {
         System.out.println("Updating price list");
         connectToDataBase("kitchenkonstructor", "root", "root");
-        //System.out.println(Arrays.toString(unicumData()));
-        System.out.println(tableTop().keySet());
+        System.out.println(Arrays.toString(unicumData()));
+        //System.out.println(tableTop().keySet());
 
     }
 
