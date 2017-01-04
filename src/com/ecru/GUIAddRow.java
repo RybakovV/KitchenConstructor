@@ -116,7 +116,7 @@ public class GUIAddRow extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 Nomenclature nomenclature = new Nomenclature(manager);
-                dataSet =  nomenclature.getNomenclatureBlatByColor(arrayColorsBlat[jComboBoxColorsBlat.getSelectedIndex()].getKod());
+                dataSet =  nomenclature.getNomenclature("-BLAT-", arrayColorsBlat[jComboBoxColorsBlat.getSelectedIndex()].getKod());
                 data = getArrayFromSet(dataSet);
 
                 DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
@@ -136,11 +136,11 @@ public class GUIAddRow extends JFrame{
                 public void actionPerformed(ActionEvent e) {
                     Nomenclature nomenclature = new Nomenclature(manager);
                     if (jComboBoxColorsFront.getItemCount() == 0) {
-                        dataSet =  nomenclature.getNomenclatureFrontByType(
+                        dataSet =  nomenclature.getNomenclature("K04-",
                                 arrayFronts[jComboBoxFront.getSelectedIndex()].getKod());
                     }else{
-                        dataSet =  nomenclature.getNomenclatureFrontByTypeAndColor(
-                                arrayFronts[jComboBoxFront.getSelectedIndex()].getKod(),
+                        dataSet =  nomenclature.getNomenclature("K04-",
+                                arrayFronts[jComboBoxFront.getSelectedIndex()].getKod() + "-" +
                                 arrayColorsFront[jComboBoxColorsFront.getSelectedIndex()].getKod());
                     }
                     data = getArrayFromSet(dataSet);
@@ -184,7 +184,7 @@ public class GUIAddRow extends JFrame{
             @Override
             public void itemStateChanged(ItemEvent e) {
                 Nomenclature nomenclature = new Nomenclature(manager);
-                dataSet =  nomenclature.getNomenclatureKorpusByColor(arrayKorpusColors[jComboBoxColorsKorpus.getSelectedIndex()].getKod());
+                dataSet =  nomenclature.getNomenclature("K04-KORPUS-", arrayKorpusColors[jComboBoxColorsKorpus.getSelectedIndex()].getKod());
                 data = getArrayFromSet(dataSet);
                 DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
                   @Override

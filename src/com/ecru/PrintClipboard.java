@@ -31,7 +31,6 @@ public class PrintClipboard {
         }
         Scanner scanner = new Scanner(System.in);
         int selectedFrontIndex = Integer.parseInt(scanner.nextLine());
-        //TODO System.out.println("Select addition front:");
 
         System.out.println("Select color front: ");
         color = new Color(manager);
@@ -40,15 +39,12 @@ public class PrintClipboard {
             System.out.println(i+ ": " +arrayColors[i].getName());
         }
         int selectedColorIndex = Integer.parseInt(scanner.nextLine());
-        //TODO System.out.println("Select addition color:");
-
 
         System.out.println("Select color korpus: ");
         Color[] arrayKorpusColors = color.arrayColors("KORPUS");
         for (int i = 0; i < arrayKorpusColors.length; i++) {
             System.out.println(i+ ": " +arrayKorpusColors[i].getName());
         }
-        //TODO System.out.println("Select addition color of korpus:");
         int selectedKorpusColorIndex = Integer.parseInt(scanner.nextLine());
 
         dataSet = new DataSet();
