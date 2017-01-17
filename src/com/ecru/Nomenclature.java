@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Created by Vitaliy Ryvakov on 10.10.2016.
  */
-public class Nomenclature implements Comparable<Nomenclature>{
+public class Nomenclature implements Comparable<Nomenclature> {
     private Connection connection;
     private String kod;
     private String name;
@@ -55,7 +55,7 @@ public class Nomenclature implements Comparable<Nomenclature>{
 
     public Nomenclature getNomenclatureKorpus(String colorKod, String sizeType) {
         Statement statement;
-        Nomenclature nomenclature = new Nomenclature("","",BigDecimal.ZERO);
+        Nomenclature nomenclature = new Nomenclature("", "", BigDecimal.ZERO);
         String kod = "K04-KORPUS-";
         try {
             statement = connection.createStatement();
@@ -67,8 +67,8 @@ public class Nomenclature implements Comparable<Nomenclature>{
             kod += sizeType;
             kod += "-KOR01";
             nomenclature = getNomenclatureByKod(kod);
-            if (nomenclature==null){
-                    nomenclature = new Nomenclature(kod,"do not definathion",BigDecimal.ZERO);
+            if (nomenclature == null) {
+                nomenclature = new Nomenclature(kod, "do not definathion", BigDecimal.ZERO);
             }
             resultSet.close();
             statement.close();
@@ -82,7 +82,7 @@ public class Nomenclature implements Comparable<Nomenclature>{
 
     public Nomenclature getNomenclatureFront(String frontName, String colorKod, String sizeType) {
         Statement statement;
-        Nomenclature nomenclature = new Nomenclature("","",BigDecimal.ZERO);
+        Nomenclature nomenclature = new Nomenclature("", "", BigDecimal.ZERO);
         String kod = "K04-";
         try {
             statement = connection.createStatement();
@@ -98,8 +98,8 @@ public class Nomenclature implements Comparable<Nomenclature>{
             kod += sizeType;
             kod += "-FRN01";
             nomenclature = getNomenclatureByKod(kod);
-            if (nomenclature==null){
-                    nomenclature = new Nomenclature(kod,"do not definathion",BigDecimal.ZERO);
+            if (nomenclature == null) {
+                nomenclature = new Nomenclature(kod, "do not definathion", BigDecimal.ZERO);
             }
             resultSet.close();
             statement.close();
@@ -117,23 +117,23 @@ public class Nomenclature implements Comparable<Nomenclature>{
         try {
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price`  FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '" + kod + "'");
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), BigDecimal.valueOf(Double.valueOf(resultSet.getString("price"))));
-            } else{
-                kod = kod.substring(0,kod.length()-1);
-                kod+="2";
+            } else {
+                kod = kod.substring(0, kod.length() - 1);
+                kod += "2";
                 resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price`  FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '" + kod + "'");
-                if (resultSet.next()){
+                if (resultSet.next()) {
                     nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), BigDecimal.valueOf(Double.valueOf(resultSet.getString("price"))));
-                }else {
-                    kod = kod.substring(0,kod.length()-2);
-                    kod+="+AKC01";
+                } else {
+                    kod = kod.substring(0, kod.length() - 2);
+                    kod += "+AKC01";
                     resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price`  FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '" + kod + "'");
                     if (resultSet.next()) {
                         nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), BigDecimal.valueOf(Double.valueOf(resultSet.getString("price"))));
-                    } else{
-                        kod = kod.substring(0,kod.length()-1);
-                        kod+="2";
+                    } else {
+                        kod = kod.substring(0, kod.length() - 1);
+                        kod += "2";
                         resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price`  FROM `kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '" + kod + "'");
                         if (resultSet.next()) {
                             nomenclature = new Nomenclature(resultSet.getString("kod"), resultSet.getString("name_ukr"), BigDecimal.valueOf(Double.valueOf(resultSet.getString("price"))));
@@ -158,18 +158,56 @@ public class Nomenclature implements Comparable<Nomenclature>{
         typeKod += colorKod;
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT  `kod`, `name_ukr`, `price` FROM " +
-                     "`kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%" + typeKod + "%'")){
-            while (resultSet.next()){
+                     "`kitchenkonstructor`.`senso_price` WHERE `kod` LIKE '%" + typeKod + "%'")) {
+            while (resultSet.next()) {
                 String kod = resultSet.getString("kod");
                 String name_ukr = resultSet.getString("name_ukr");
                 BigDecimal price = BigDecimal.valueOf(Double.valueOf(resultSet.getString("price")));
                 nomenclature = new Nomenclature(kod, name_ukr, price);
                 result.add(nomenclature);
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return result;
     }
 
+    public Set<Nomenclature> getNomenclatureOther() {
+        Set<Nomenclature> result = new TreeSet<>();
+        Nomenclature nomenclature;
+
+        Set<String> frn = new HashSet<>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT `kod` FROM `kitchenkonstructor`.`frn`")) {
+            while (resultSet.next()) {
+                frn.add(resultSet.getString("kod"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        String sql = "SELECT  `kod`, `name_ukr`, `price` FROM `kitchenkonstructor`.`senso_price` " +
+                "WHERE `kod` NOT LIKE '%BLAT%' " +
+                "AND `kod` NOT LIKE '%KORPUS%' " +
+                "AND `kod` NOT LIKE '%-BLAT_LIS-%' " +
+                "AND `kod` NOT LIKE '%-BLAT_LIS/D-%' " +
+                "AND `kod` NOT LIKE '%-COKOL-%' ";
+        for (String f : frn) {
+            sql += "AND `kod` NOT LIKE '%" + f + "%'";
+        }
+
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+                String kod = resultSet.getString("kod");
+                String name_ukr = resultSet.getString("name_ukr");
+                BigDecimal price = BigDecimal.valueOf(Double.valueOf(resultSet.getString("price")));
+                nomenclature = new Nomenclature(kod, name_ukr, price);
+                result.add(nomenclature);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

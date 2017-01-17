@@ -10,6 +10,8 @@ import javax.swing.event.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.util.TimerTask;
@@ -25,6 +27,9 @@ public class GUI extends JFrame {
     static final int MAXIMUM_USE_FRONT = 3; //TODO Analitics
     static final int MAXIMUM_USE_COLOR_FRONT = 0; //TODO Analitics
     private static final int MAXIMUM_USE_COLOR_KORPUS = 3;  //TODO Analitics
+    private final JButton jButtonCopyToClipboard;
+    private final JButton jButtonCtrlC;
+    private final JButton jButtonCtrlV;
 
     private JButton jButtonAddRow;
     private JLabel jLabel;
@@ -94,6 +99,7 @@ public class GUI extends JFrame {
                         {"4","K04-KORPUS-BK-AVENTOS_HF_A2-AKC02", "1","","","","","",""}};
     private double sum;
     private ProgressDialog progress;
+    private String clipboard;
 
     public GUI() {
         super("Конструктор кухонь");
@@ -108,7 +114,7 @@ public class GUI extends JFrame {
         Dimension dimensionComboBox = new Dimension(295,25);
 
 
-
+        /************** FRONTS*************/
         jLabelMainFront = new JLabel("Основний");
         jComboBoxMainFront = new JComboBox(front.getFrontsNames(arrayFronts));
         jComboBoxMainFront.setSelectedIndex(MAXIMUM_USE_FRONT);
@@ -129,9 +135,8 @@ public class GUI extends JFrame {
         jPanelFronts.add(jComboBoxAdditionFront);
         add(jPanelFronts);
 
-        arrayColorsMainFront = color.arrayColors(arrayFronts[jComboBoxMainFront.getSelectedIndex()].getKod());
-
         jLabelColorsMainFront = new JLabel("Основний");
+        arrayColorsMainFront = color.arrayColors(arrayFronts[jComboBoxMainFront.getSelectedIndex()].getKod());
         jComboBoxColorsMainFront = new JComboBox(color.getColorsNames(arrayColorsMainFront));
         jComboBoxColorsMainFront.setSelectedIndex(MAXIMUM_USE_COLOR_FRONT);
         jComboBoxColorsMainFront.setPreferredSize(dimensionComboBox);
@@ -149,7 +154,10 @@ public class GUI extends JFrame {
         jPanelColorsFront.add(jLabelColorsAdditionFront);
         jPanelColorsFront.add(jComboBoxColorsAdditionFront);
         add(jPanelColorsFront);
+        /************** FRONTS*************/
 
+
+        /*******COLOR KORPUS*********/
         arrayKorpusColors = color.arrayColors("KORPUS");
         jLabelColorsMainKorpus = new JLabel("Основний");
         jComboBoxColorsMainKorpus = new JComboBox(color.getColorsNames(arrayKorpusColors));
@@ -162,7 +170,6 @@ public class GUI extends JFrame {
         jComboBoxColorsAdditionKorpus.setSelectedIndex(arrayKorpusColors.length);
         jComboBoxColorsAdditionKorpus.setPreferredSize(dimensionComboBox);
 
-
         jPanelColorsKorpus = new JPanel();
         jPanelColorsKorpus.setPreferredSize(dimensionPanels);
         jPanelColorsKorpus.setBorder(BorderFactory.createTitledBorder("Виберіть колір корпусу"));
@@ -171,57 +178,104 @@ public class GUI extends JFrame {
         jPanelColorsKorpus.add(jLabelColorsAdditionKorpus);
         jPanelColorsKorpus.add(jComboBoxColorsAdditionKorpus);
         add(jPanelColorsKorpus);
+        /*******COLOR KORPUS*********/
 
+        /*********BUTTONS***********/
         jPanelButtons = new JPanel();
         jPanelButtons.setPreferredSize(new Dimension(967, 54));
         jPanelButtons.setBorder(BorderFactory.createTitledBorder(""));
-        jButtonGetFromClipboard = new JButton(new ImageIcon("editpaste_32.png"));
+
+        jButtonGetFromClipboard = new JButton(new ImageIcon("paste.png"));
         jButtonGetFromClipboard.setToolTipText("Вставити з буферу обміну");
         jPanelButtons.add(jButtonGetFromClipboard);
-        jButtonCopyRow = new JButton(new ImageIcon("add_32.png"));
-        jButtonCopyRow.setToolTipText("Копіювати рядок");
 
-        jButtonRemoveRow = new JButton(new ImageIcon("remove_32.png"));
-        jButtonRemoveRow.setToolTipText("Видалити рядок");
+        jButtonCtrlC = new JButton("Ctrl+C");
+        jButtonCtrlC.setToolTipText("Копіювати ячейку");
+        jPanelButtons.add(jButtonCtrlC);
 
-        jButtonAddRow = new JButton(new ImageIcon("gtk-add_4285.png"));
-        jButtonAddRow.setToolTipText("Додати номенклатуру...");
+        jButtonCtrlV = new JButton("Ctrl+V");
+        jButtonCtrlV.setToolTipText("Вставити ячейку");
+        jPanelButtons.add(jButtonCtrlV);
+
+        jButtonCopyToClipboard = new JButton(new ImageIcon("copy.png"));
+        jButtonCopyToClipboard.setToolTipText("Кіпіювати до буферу обміну");
+        jPanelButtons.add(jButtonCopyToClipboard);
 
         jButtonRecalculate = new JButton(new ImageIcon("reload_8215.png"));
         jButtonRecalculate.setToolTipText("Перерахувати");
         jPanelButtons.add(jButtonRecalculate);
-        jPanelButtons.add(jButtonCopyRow);
-        jPanelButtons.add(jButtonRemoveRow);
-        jPanelButtons.add(jButtonAddRow);
 
+        jButtonCopyRow = new JButton(new ImageIcon("add_32.png"));
+        jButtonCopyRow.setToolTipText("Копіювати рядок");
+        jPanelButtons.add(jButtonCopyRow);
+
+        jButtonRemoveRow = new JButton(new ImageIcon("remove_32.png"));
+        jButtonRemoveRow.setToolTipText("Видалити рядок");
+        jPanelButtons.add(jButtonRemoveRow);
+
+        jButtonAddRow = new JButton(new ImageIcon("gtk-add_4285.png"));
+        jButtonAddRow.setToolTipText("Додати номенклатуру...");
+        jPanelButtons.add(jButtonAddRow);
+        add(jPanelButtons);
+
+        //Temp for debug
         jProgressBar = new JProgressBar();
         jProgressBar.setStringPainted(true);
         jProgressBar.setMaximum(40);
         jProgressBar.setValue(0);
-
         jPanelButtons.add(jProgressBar);
+
         jLabel = new JLabel();
         jPanelButtons.add(jLabel);
-        add(jPanelButtons);
+        /*********BUTTONS***********/
 
+
+        /*********TABLE ORDER***********/
         jTableOrder = new JTable(dataOrder, columnNames);
-        jTableOrder.setPreferredScrollableViewportSize(new Dimension(967, 580));
+        jTableOrder.setPreferredScrollableViewportSize(new Dimension(967, 400));
         jTableOrder.setFillsViewportHeight(true);
         setColumnWidth(jTableOrder);
+
         jComboBoxFrontInTable = new JComboBox(front.getFrontsNames(arrayFronts));
         listenerComboBoxFrontInTable = new BoundsPopupMenuListener(true, false);
         jComboBoxFrontInTable.addPopupMenuListener(listenerComboBoxFrontInTable);
+
         jComboBoxColorsFrontInTable = new JComboBox(color.getColorsNames(arrayColorsMainFront));
         listenerComboBoxColorsFrontInTable = new BoundsPopupMenuListener(true, false);
         jComboBoxColorsFrontInTable.addPopupMenuListener(listenerComboBoxColorsFrontInTable);
+
         typeColumn = jTableOrder.getColumnModel().getColumn(TYPE);
         typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxFrontInTable));
         typeColumn = jTableOrder.getColumnModel().getColumn(COLOR);
         typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxColorsFrontInTable));
-
         jScrollPane = new JScrollPane(jTableOrder);
         add(jScrollPane);
         jTableOrder.setCellSelectionEnabled(true);//so ass select only one cell
+        jTableOrder.setTransferHandler(null);
+        /*********TABLE ORDER***********/
+
+        jTableOrder.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if ((e.getKeyCode() == KeyEvent.VK_C) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+                    clipboard = (String) jTableOrder.getValueAt(jTableOrder.getSelectedRow(),jTableOrder.getSelectedColumn());
+
+                }
+                if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+                    jTableOrder.setValueAt(clipboard, jTableOrder.getSelectedRow(),jTableOrder.getSelectedColumn());
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
 
         jButtonAddRow.addActionListener(new ActionListener() {
             @Override
@@ -230,6 +284,45 @@ public class GUI extends JFrame {
                 addRow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 addRow.setSize(1000,500);
                 addRow.setVisible(true);
+            }
+        });
+
+
+
+
+        jButtonCopyToClipboard.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dataOrder = getDataFromTable(jTableOrder);
+                String clipboard ="";
+                int i = 0;
+                for (; i < dataOrder.length-1; i++) {
+                    clipboard += dataOrder[i][NUMBER_ROW] + "\t" +
+                                 dataOrder[i][ARTIKLE] + "\t" +
+                                 dataOrder[i][NAME] + "\t" +
+                                 dataOrder[i][COUNT] + "\t" +
+                                 dataOrder[i][PRICE].replace(".",",") + "\t" +
+                                 dataOrder[i][SUM].replace(".",",") + "\n";
+                }
+                clipboard += "\t\t\t\t\t" + dataOrder[i][SUM].replace(".",",") + "\n";
+                StringSelection stringSelection = new StringSelection(clipboard);
+                Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clpbrd.setContents(stringSelection, null);
+
+            }
+        });
+
+        jButtonCtrlC.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clipboard = (String) jTableOrder.getValueAt(jTableOrder.getSelectedRow(),jTableOrder.getSelectedColumn());
+            }
+        });
+
+        jButtonCtrlV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jTableOrder.setValueAt(clipboard, jTableOrder.getSelectedRow(),jTableOrder.getSelectedColumn());
             }
         });
 
@@ -370,7 +463,6 @@ public class GUI extends JFrame {
         jButtonRemoveRow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 int selectedRow = jTableOrder.getSelectedRow();
                 if ( selectedRow >= 0 ){
                     dataOrder = getDataFromTable(jTableOrder);
@@ -382,7 +474,6 @@ public class GUI extends JFrame {
                         newData[i-1] = dataOrder[i];
                         newData[i-1][NUMBER_ROW] = String.valueOf(i);
                     }
-
                     dataOrder = newData;
                     dataOrder[dataOrder.length-1][SUM] = String.valueOf(getTotalSum(dataOrder));
 
@@ -436,8 +527,6 @@ public class GUI extends JFrame {
                 jComboBoxFrontInTable.addItem(front.getFrontsNames(arrayFronts));
                 TableColumn typeColumn = jTableOrder.getColumnModel().getColumn(TYPE);
                 typeColumn.setCellEditor(new DefaultCellEditor(jComboBoxFrontInTable));
-
-
             }
         });
 
@@ -445,10 +534,8 @@ public class GUI extends JFrame {
         jButtonGetFromClipboard.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 DataSet dataSet = new DataSet();
                 DataSet[] clipboard = dataSet.splitClipboard();
-
 
                 final ProgressDialog progress = new ProgressDialog();
                 java.util.Timer timer = new java.util.Timer();
@@ -484,7 +571,6 @@ public class GUI extends JFrame {
         });
 
         jComboBoxFrontInTable.addItemListener(new ItemListener(){
-
             @Override
             public void itemStateChanged(ItemEvent e) {
                 Color[] arrayColors = color.arrayColors(arrayFronts[jComboBoxFrontInTable.getSelectedIndex()].getKod());
@@ -534,13 +620,12 @@ public class GUI extends JFrame {
 
     private int getIndexFront(String frontName) {
         for (int i = 0; i < arrayFronts.length ; i++) {
-            if (arrayFronts[i].getName().equals(frontName)){
+            if (arrayFronts[i].getName().equals(frontName)) {
                 return i;
             }
         }
         return -1;
     }
-
 
     private void insertNomenclature(Nomenclature nomenclature) {
         int selectedRow = jTableOrder.getSelectedRow();

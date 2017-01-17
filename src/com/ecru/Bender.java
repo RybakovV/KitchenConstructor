@@ -1,7 +1,5 @@
 package com.ecru;
 
-import com.ecru.JframeJLabel.*;
-
 import javax.swing.*;
 
 /**
@@ -12,7 +10,7 @@ public class Bender {
 
         GUI window = new GUI();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(1000,850);
+        window.setSize(1000,700);
         window.setVisible(true);
 
     }

@@ -21,7 +21,8 @@ public class DownloadDataColors {
         connectToDataBase("kitchenkonstructor", "root", "root");
         //unicumColorDataToConsole();
         //insertDataFromFileToDB("colorsBlat.txt", "colors");
-        System.out.println(dataToConsole("-BLAT_LIS").toString());
+
+        System.out.println(dataToConsole("COKOL").toString());
     }
 
     private static void insertDataFromFileToDB(String fileName, String tableName) {

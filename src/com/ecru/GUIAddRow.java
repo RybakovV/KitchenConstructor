@@ -22,13 +22,14 @@ public class GUIAddRow extends JFrame{
     private final JLabel jLabelType;
     private final JComboBox jComboBoxType;
     private final JComboBox jComboBoxColorsBlat;
+    private final JComboBox jComboBoxColorsCokol;
     private JComboBox jComboBoxColorsBlatLis;
 
     private final JLabel statusLabel;
     private final JTable jTableNomeklature;
     private final JScrollPane jScrollPanel;
     private Color[] arrayColorsFront;
-    private String[] typesNomenсlature = {"", "Корпус", "Фасад", "Стільниця", "Плінтус"};
+    private String[] typesNomenсlature = {"", "Корпус", "Фасад", "Стільниця", "Плінтус", "Цоколь", "Інше"};
     private JComboBox jComboBoxColorsKorpus;
 
     private JComboBox jComboBoxFront;
@@ -77,14 +78,42 @@ public class GUIAddRow extends JFrame{
         jComboBoxColorsBlatLis.setVisible(false);
         add(jComboBoxColorsBlatLis);
 
+        Color[] arrayColorsCokol = color.arrayColors("COKOL");
+        jComboBoxColorsCokol = new JComboBox(color.getColorsNames(arrayColorsCokol));
+        jComboBoxColorsCokol.setVisible(false);
+        add(jComboBoxColorsCokol);
+
         statusLabel = new JLabel("status");
         add(statusLabel);
+
 
         jTableNomeklature = new JTable(data, columnNamesTableNomenclature);
         jTableNomeklature.setPreferredScrollableViewportSize(new Dimension(800,400));
         jTableNomeklature.setFillsViewportHeight(true);
         jScrollPanel = new JScrollPane(jTableNomeklature);
         add(jScrollPanel);
+
+        jComboBoxColorsCokol.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Nomenclature nomenclature = new Nomenclature(manager);
+                Set<Nomenclature> dataSetColorsCokol =  nomenclature.getNomenclature("-COKOL-",
+                        arrayColorsCokol[jComboBoxColorsCokol.getSelectedIndex()].getKod());
+                dataSet = new TreeSet<Nomenclature>();
+                dataSet.addAll(dataSetColorsCokol);
+                data = getArrayFromSet(dataSet);
+
+                DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        //all cells false
+                        return false;
+                    }
+                };
+                jTableNomeklature.setModel(model);
+
+            }
+        });
 
         jComboBoxColorsBlatLis.addActionListener(new ActionListener() {
             @Override
@@ -108,7 +137,6 @@ public class GUIAddRow extends JFrame{
                     }
                 };
                 jTableNomeklature.setModel(model);
-
             }
         });
 
@@ -202,41 +230,61 @@ public class GUIAddRow extends JFrame{
             public void itemStateChanged(ItemEvent e) {
                 switch (jComboBoxType.getSelectedIndex()){
                     case 1: {
+                        setUnvisibleAllComboBox();
                         jComboBoxColorsKorpus.setVisible(true);
-                        jComboBoxFront.setVisible(false);
-                        jComboBoxColorsFront.setVisible(false);
-                        jComboBoxColorsBlat.setVisible(false);
-                        jComboBoxColorsBlatLis.setVisible(false);
                         break;
                     }
                     case 2: {
+                        setUnvisibleAllComboBox();
                         jComboBoxFront.setVisible(true);
                         jComboBoxColorsFront.setVisible(true);
-                        jComboBoxColorsKorpus.setVisible(false);
-                        jComboBoxColorsBlat.setVisible(false);
-                        jComboBoxColorsBlatLis.setVisible(false);
-
                         break;
                     }
                     case 3: {
-                        jComboBoxFront.setVisible(false);
-                        jComboBoxColorsFront.setVisible(false);
-                        jComboBoxColorsKorpus.setVisible(false);
+                        setUnvisibleAllComboBox();
                         jComboBoxColorsBlat.setVisible(true);
-                        jComboBoxColorsBlatLis.setVisible(false);
                         break;
                     }
                     case 4:{
-                        jComboBoxFront.setVisible(false);
-                        jComboBoxColorsFront.setVisible(false);
-                        jComboBoxColorsKorpus.setVisible(false);
-                        jComboBoxColorsBlat.setVisible(false);
+                        setUnvisibleAllComboBox();
                         jComboBoxColorsBlatLis.setVisible(true);
+                        break;
                     }
+                    case 5: {
+                        setUnvisibleAllComboBox();
+                        jComboBoxColorsCokol.setVisible(true);
+                        break;
 
+                    }
+                    case 6:{
+                        setUnvisibleAllComboBox();
+
+                        Nomenclature nomenclature = new Nomenclature(manager);
+                        dataSet =  nomenclature.getNomenclatureOther();
+                        data = getArrayFromSet(dataSet);
+                        DefaultTableModel model = new DefaultTableModel(data, columnNamesTableNomenclature){
+                            @Override
+                            public boolean isCellEditable(int row, int column) {
+                                //all cells false
+                                return false;
+                            }
+                        };
+                        jTableNomeklature.setModel(model);
+
+                        break;
+                    }
                 }
             }
         });
+    }
+
+    private void setUnvisibleAllComboBox() {
+        jComboBoxFront.setVisible(false);
+        jComboBoxColorsFront.setVisible(false);
+        jComboBoxColorsKorpus.setVisible(false);
+        jComboBoxColorsBlat.setVisible(false);
+        jComboBoxColorsBlatLis.setVisible(false);
+        jComboBoxColorsCokol.setVisible(false);
     }
 
     private String[][] getArrayFromSet(Set<Nomenclature> dataSet) {
